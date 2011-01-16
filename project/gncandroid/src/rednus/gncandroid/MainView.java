@@ -58,7 +58,6 @@ public class MainView extends TabActivity {
 		builder.setMessage(message).setCancelable(false).setPositiveButton(
 				app.res.getString(R.string.button_text_ok),
 				new DialogInterface.OnClickListener() {
-					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						// show prefs
 						Intent i = new Intent(getBaseContext(),

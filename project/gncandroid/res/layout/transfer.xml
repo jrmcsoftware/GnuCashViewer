@@ -94,7 +94,14 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_height="wrap_content"
 		>
 		</Spinner>
-	</TableRow>
+		<Button 
+		android:text="@string/account_filter_button_label" 
+		android:id="@+id/to_filter_button" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		>
+		</Button>
+</TableRow>
 	<TableRow
 	android:id="@+id/widget49"
 	android:layout_width="fill_parent"
@@ -115,7 +122,14 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_height="wrap_content"
 		>
 		</Spinner>
-	</TableRow>
+		<Button 
+		android:text="@string/account_filter_button_label" 
+		android:id="@+id/from_filter_button" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		>
+		</Button>
+</TableRow>
 	<TableRow
 	android:id="@+id/widget47"
 	android:layout_width="fill_parent"

@@ -52,7 +52,6 @@ public class Preferences extends PreferenceActivity {
 		Preference dataFilePref = findPreference(pref_data_file_key);
 		dataFilePref
 				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					@Override
 					public boolean onPreferenceClick(Preference pref) {
 						if (pref.getKey().equalsIgnoreCase(pref_data_file_key)) {
 							if (app.localLOGV)
@@ -72,7 +71,6 @@ public class Preferences extends PreferenceActivity {
 		Preference versionPref = findPreference(pref_version_key);
 		versionPref
 				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					@Override
 					public boolean onPreferenceClick(Preference pref) {
 						new AlertDialog.Builder(Preferences.this)
 								// .setIcon(R.drawable.alert_dialog_icon)
@@ -80,7 +78,6 @@ public class Preferences extends PreferenceActivity {
 								.setMessage(R.string.app_version_history)
 								.setPositiveButton(R.string.alert_dialog_ok,
 										new DialogInterface.OnClickListener() {
-											@Override
 											public void onClick(
 													DialogInterface dialog,
 													int whichButton) {
@@ -93,7 +90,6 @@ public class Preferences extends PreferenceActivity {
 		String pref_about_key = app.res.getString(R.string.pref_about_key);
 		Preference aboutPref = findPreference(pref_about_key);
 		aboutPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
 			public boolean onPreferenceClick(Preference pref) {
 				new AlertDialog.Builder(Preferences.this)
 				// .setIcon(R.drawable.alert_dialog_icon)
@@ -101,7 +97,6 @@ public class Preferences extends PreferenceActivity {
 								R.string.app_about_text).setPositiveButton(
 								R.string.alert_dialog_ok,
 								new DialogInterface.OnClickListener() {
-									@Override
 									public void onClick(DialogInterface dialog,
 											int whichButton) {
 									}
@@ -155,7 +150,6 @@ public class Preferences extends PreferenceActivity {
 					R.string.error_message_prefs_not_set).setPositiveButton(
 					R.string.alert_dialog_ok,
 					new DialogInterface.OnClickListener() {
-						@Override
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
 						}

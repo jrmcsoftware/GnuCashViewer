@@ -75,6 +75,7 @@
 <string name="taxtables">Tax Tables</string>
 <string name="billterms">Bill Terms</string>
 
+<string name="account_filter_button_label">...</string>
 
 <string name="menu_options_pref">Options</string>
 <string name="filterprefscreen">FilterPrefScreen</string>

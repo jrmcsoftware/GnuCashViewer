@@ -9,8 +9,10 @@ import java.util.Calendar;
 import java.util.TreeMap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -24,6 +26,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -59,6 +62,14 @@ public class QuickEntryActivity extends Activity {
 	private String[] toAccountGUIDs;
 	private String[] fromAccountNames;
 	private String[] fromAccountGUIDs;
+	private boolean[] toAccountFilerValues = {false, false, false};
+	
+	// Support for the account type filters on the to/from spinners
+	private CharSequence[] accountTypeKeys;
+	private String[] accountTypeValues;
+	private boolean[] toAccountTypes;
+	private boolean[] fromAccountTypes;
+
 
 	/*
 	 * (non-Javadoc)
@@ -75,6 +86,8 @@ public class QuickEntryActivity extends Activity {
 			Log.i(TAG, "Activity created");
 		setContentView(R.layout.quickentry);
 
+		constructAccountTypeFilters();
+		
 		Button saveButton = (Button) findViewById(R.id.ButtonSave);
 		Button clearButton = (Button) findViewById(R.id.ButtonClear);
 
@@ -126,6 +139,25 @@ public class QuickEntryActivity extends Activity {
 			Log.i(TAG, "Activity Finished");
 	}
 
+	private void constructAccountTypeFilters() {
+		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.GetAccountTypeMapping();
+		int size = accountTypeMapping.size();
+		
+		accountTypeKeys = new CharSequence[size];
+		accountTypeValues = new String[size];
+		toAccountTypes = new boolean[size];
+		fromAccountTypes = new boolean[size];
+
+		int i=0;
+		for (String key: accountTypeMapping.keySet()) {
+			accountTypeKeys[i] = key;
+			accountTypeValues[i] = accountTypeMapping.get(key);
+			toAccountTypes[i] = false;
+			fromAccountTypes[i] = false;
+			i++;
+		}
+	}
+	
 	private void constructAccountLists() {
 		String[] toAccountFilter = {"EXPENSE"};
 		TreeMap<String, String> toAccounts = app.gncDataHandler
@@ -152,6 +184,9 @@ public class QuickEntryActivity extends Activity {
 		mFrom = (Spinner) findViewById(R.id.spinner_from);
 		mAmount = (EditText) findViewById(R.id.amount);
 		dateButton = (Button) findViewById(R.id.ButtonDate);
+		
+		Button toFilterButton = (Button) findViewById(R.id.to_filter_button);
+		Button fromFilterButton = (Button) findViewById(R.id.from_filter_button);
 
 		ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, toAccountNames);
@@ -183,6 +218,52 @@ public class QuickEntryActivity extends Activity {
 		dateButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				showDialog(DATE_DIALOG_ID);
+			}
+		});
+		
+		toFilterButton.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
+				builder.setTitle("Select Account Types");
+				builder.setMultiChoiceItems(accountTypeKeys, toAccountTypes, new DialogInterface.OnMultiChoiceClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+						toAccountTypes[which] = isChecked;
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+					
+					public void onDismiss(DialogInterface arg0) {
+						Toast.makeText(getApplicationContext(), "Closed", Toast.LENGTH_SHORT).show();					
+					}
+					
+				});
+				alert.show();
+			}
+		});
+
+		fromFilterButton.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
+				builder.setTitle("Select Account Types");
+				builder.setMultiChoiceItems(accountTypeKeys, fromAccountTypes, new DialogInterface.OnMultiChoiceClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+						fromAccountTypes[which] = isChecked;
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+					
+					public void onDismiss(DialogInterface arg0) {
+						Toast.makeText(getApplicationContext(), "Closed", Toast.LENGTH_SHORT).show();					
+					}
+					
+				});
+				alert.show();
 			}
 		});
 

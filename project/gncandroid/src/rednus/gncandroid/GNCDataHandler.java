@@ -39,6 +39,7 @@ public class GNCDataHandler {
 	private boolean longAccountNames;
 	private String accountFilter;
 	private TreeMap<String, String> accountPrefMapping;
+	private TreeMap<String, String> accountTypeMapping;
 	private Resources res;
 	public boolean dataValid = false;
 
@@ -125,28 +126,57 @@ public class GNCDataHandler {
 			Log.e(TAG, e.getStackTrace().toString());
 		}
 	}
+	
+	public TreeMap<String, String> GetAccountTypeMapping() {
+		return accountTypeMapping;
+	}
 
 	public void BuildAccountMapping() {
-		// TODO This isn't the full list
 		accountPrefMapping = new TreeMap<String, String>();
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_asset),
-				"ASSET");
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_bank),
-				"BANK");
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_cc),
-				"CREDIT");
-		accountPrefMapping.put(res
-				.getString(R.string.pref_account_type_expense), "EXPENSE");
-		accountPrefMapping.put(
-				res.getString(R.string.pref_account_type_equity), "EQUITY");
-		accountPrefMapping.put(
-				res.getString(R.string.pref_account_type_income), "INCOME");
-		accountPrefMapping.put(res
-				.getString(R.string.pref_account_type_liability), "LIABILITY");
-		accountPrefMapping.put(res
-				.getString(R.string.pref_account_type_mutual_fund), "MUTUAL");
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_stock),
-				"STOCK");
+		accountTypeMapping = new TreeMap<String, String>();
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_asset), "ASSET");
+		accountTypeMapping.put(res.getString(R.string.account_type_asset), "ASSET");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_bank), "BANK");
+		accountTypeMapping.put(res.getString(R.string.account_type_bank), "BANK");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_cc), "CREDIT");
+		accountTypeMapping.put(res.getString(R.string.account_type_cc), "CREDIT");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_expense), "EXPENSE");
+		accountTypeMapping.put(res.getString(R.string.account_type_expense), "EXPENSE");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_equity), "EQUITY");
+		accountTypeMapping.put(res.getString(R.string.account_type_equity), "EQUITY");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_income), "INCOME");
+		accountTypeMapping.put(res.getString(R.string.account_type_income), "INCOME");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_liability), "LIABILITY");
+		accountTypeMapping.put(res.getString(R.string.account_type_liability), "LIABILITY");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_mutual_fund), "MUTUAL");
+		accountTypeMapping.put(res.getString(R.string.account_type_mutual_fund), "MUTUAL");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_stock),"STOCK");
+		accountTypeMapping.put(res.getString(R.string.account_type_stock),"STOCK");
+
+		// TODO need the account_type string for these 
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_cash),"TODO");
+		accountTypeMapping.put(res.getString(R.string.account_type_cash),"TODO");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_currency),"TODO");
+		accountTypeMapping.put(res.getString(R.string.account_type_currency),"TODO");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_receivable),"TODO");
+		accountTypeMapping.put(res.getString(R.string.account_type_a_receivable),"TODO");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_payable),"TODO");
+		accountTypeMapping.put(res.getString(R.string.account_type_a_payable),"TODO");
+		
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_trading),"TODO");
+		accountTypeMapping.put(res.getString(R.string.account_type_trading),"TODO");
 	}
 
 	public void GenAccountFilter(SharedPreferences sp) {
