@@ -5,6 +5,7 @@
  */
 package rednus.gncandroid;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TreeMap;
 
@@ -62,13 +63,13 @@ public class QuickEntryActivity extends Activity {
 	private String[] toAccountGUIDs;
 	private String[] fromAccountNames;
 	private String[] fromAccountGUIDs;
-	private boolean[] toAccountFilerValues = {false, false, false};
 	
 	// Support for the account type filters on the to/from spinners
-	private CharSequence[] accountTypeKeys;
-	private String[] accountTypeValues;
-	private boolean[] toAccountTypes;
-	private boolean[] fromAccountTypes;
+	// These 4 arrays are used as set (kinda two sets)  
+	private CharSequence[] accountTypeKeys;		// The user friendly account type names
+	private String[] accountTypeValues;			// The account type values as they are used in the db
+	private boolean[] toAccountTypes;			// Which types to use in the to account filter
+	private boolean[] fromAccountTypes;			// Which types to use in the from account filter
 
 
 	/*
@@ -102,7 +103,13 @@ public class QuickEntryActivity extends Activity {
 		transtypeSpinner
 				.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
 
-		constructAccountLists();
+		String[] toAccountFilter = {"EXPENSE"};
+		setBitmapFromAccountList(toAccountFilter,toAccountTypes,accountTypeValues);
+		constructToAccountLists(getAccountListFromBitmap(toAccountTypes,accountTypeValues));
+		
+		String[] fromAccountFilter = {"CREDIT", "BANK"};
+		setBitmapFromAccountList(fromAccountFilter,fromAccountTypes,accountTypeValues);
+		constructFromAccountLists(getAccountListFromBitmap(fromAccountTypes,accountTypeValues));
 
 		setupTransferControls();
 
@@ -158,19 +165,19 @@ public class QuickEntryActivity extends Activity {
 		}
 	}
 	
-	private void constructAccountLists() {
-		String[] toAccountFilter = {"EXPENSE"};
+	private void constructToAccountLists(String[] filter) {
 		TreeMap<String, String> toAccounts = app.gncDataHandler
-				.GetAccountList(toAccountFilter);
+				.GetAccountList(filter);
 		toAccountNames = new String[toAccounts.size()];
 		toAccountGUIDs = new String[toAccounts.size()];
 		toAccounts.keySet().toArray(toAccountNames);
 		for (int i = 0; i < toAccounts.size(); i++)
 			toAccountGUIDs[i] = toAccounts.get(toAccountNames[i]);
+	}
 
-		String[] fromAccountFilter = {"CREDIT", "BANK"};
+	private void constructFromAccountLists(String[] filter) {
 		TreeMap<String, String> fromAccounts = app.gncDataHandler
-				.GetAccountList(fromAccountFilter);
+				.GetAccountList(filter);
 		fromAccountNames = new String[fromAccounts.size()];
 		fromAccountGUIDs = new String[fromAccounts.size()];
 		fromAccounts.keySet().toArray(fromAccountNames);
@@ -178,6 +185,36 @@ public class QuickEntryActivity extends Activity {
 			fromAccountGUIDs[i] = fromAccounts.get(fromAccountNames[i]);
 	}
 
+	private void setBitmapFromAccountList(String values[], boolean[] accountTypeBitmap, String[] accountList) {
+		for(int i=0;i<accountList.length;i++) {
+			boolean found = false;
+			for(String v: values)
+				if ( accountList[i].equals(v))
+					found = true;
+			accountTypeBitmap[i] = found;
+		}		
+	}
+	
+	private String[] getAccountListFromBitmap(boolean[] selectedAccoutTypes, String[] values) {
+		ArrayList<String> l = new ArrayList<String>();
+		
+		for (int i=0;i<selectedAccoutTypes.length;i++)
+			if (selectedAccoutTypes[i] )
+				l.add(values[i]);
+		
+		String[] ret = new String[l.size()];
+		return l.toArray(ret);
+	}
+
+	private void setToFromAdapter(Spinner spinner, String[] values) {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, values);
+		
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+		spinner.setAdapter(adapter);
+	}
+	
 	private void setupTransferControls() {
 		mDescription = (AutoCompleteTextView) findViewById(R.id.EditTextDescriptoin);
 		mTo = (Spinner) findViewById(R.id.spinner_to);
@@ -188,17 +225,8 @@ public class QuickEntryActivity extends Activity {
 		Button toFilterButton = (Button) findViewById(R.id.to_filter_button);
 		Button fromFilterButton = (Button) findViewById(R.id.from_filter_button);
 
-		ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, toAccountNames);
-		toAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mTo.setAdapter(toAdapter);
-
-		ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, fromAccountNames);
-		fromAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mFrom.setAdapter(fromAdapter);
+		setToFromAdapter(mTo, toAccountNames);
+		setToFromAdapter(mFrom, fromAccountNames);
 
 		descs = app.gncDataHandler.GetTransactionDescriptions();
 		ArrayAdapter<String> descAdapter = new ArrayAdapter<String>(this,
@@ -236,7 +264,8 @@ public class QuickEntryActivity extends Activity {
 				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					
 					public void onDismiss(DialogInterface arg0) {
-						Toast.makeText(getApplicationContext(), "Closed", Toast.LENGTH_SHORT).show();					
+						constructToAccountLists(getAccountListFromBitmap(toAccountTypes,accountTypeValues));
+						setToFromAdapter(mTo, toAccountNames);
 					}
 					
 				});
@@ -259,7 +288,8 @@ public class QuickEntryActivity extends Activity {
 				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					
 					public void onDismiss(DialogInterface arg0) {
-						Toast.makeText(getApplicationContext(), "Closed", Toast.LENGTH_SHORT).show();					
+						constructFromAccountLists(getAccountListFromBitmap(fromAccountTypes,accountTypeValues));
+						setToFromAdapter(mFrom, fromAccountNames);
 					}
 					
 				});
