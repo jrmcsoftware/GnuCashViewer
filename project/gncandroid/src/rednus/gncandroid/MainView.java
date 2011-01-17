@@ -27,6 +27,7 @@ public class MainView extends TabActivity {
 	private static final String TAG = "MainView"; // TAG for this activity
 	private GNCAndroid app; // Application Reference
 	private ProgressDialog pd; // progress bar
+	private boolean screensCreated = false;
 
 	/*
 	 * Start of activity. Check if data file can be read, if not show dialog and
@@ -74,6 +75,12 @@ public class MainView extends TabActivity {
 	 * activities are initiated.
 	 */
 	private void showScreen() {
+		
+		if ( screensCreated )
+			return;
+		
+		screensCreated = true;
+		
 		if (app.localLOGV)
 			Log.i(TAG, "Showing main screen...");
 		if (!app.gncDataHandler.dataValid) {
