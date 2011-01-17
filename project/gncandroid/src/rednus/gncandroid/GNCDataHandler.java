@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -277,14 +278,14 @@ public class GNCDataHandler {
 
 	}
 
-	public TreeMap<String, Account> GetSubAccounts(String rootGUID) {
+	public LinkedHashMap<String, Account> GetSubAccounts(String rootGUID) {
 		String[] queryArgs = { rootGUID };
 		Cursor cursor = sqliteHandle.rawQuery(
 				"select * from accounts where parent_guid=? "
 						+ accountFilter + " order by name", queryArgs);
 		try {
 			if (cursor.getCount() > 0) {
-				TreeMap<String, Account> listData = new TreeMap<String, Account>();
+				LinkedHashMap<String, Account> listData = new LinkedHashMap<String, Account>();
 				Account rootAccount = this.GetAccount(rootGUID, true);
 				if (!rootAccount.name.contains("Root"))
 					listData.put(rootGUID, rootAccount);
