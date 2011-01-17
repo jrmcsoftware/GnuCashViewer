@@ -85,8 +85,6 @@ public class MainView extends TabActivity {
 		}
 		// The activity TabHost
 		final TabHost tabHost = getTabHost();
-		// Clear the tabs to show the new data
-		tabHost.clearAllTabs();
 		// Reusable TabSpec for each tab
 		TabHost.TabSpec spec;
 		// Reusable Intent for each tab
