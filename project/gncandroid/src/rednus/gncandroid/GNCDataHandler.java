@@ -65,14 +65,14 @@ public class GNCDataHandler {
 		res = app.getResources();
 
 		this.longAccountNames = longAccountNames;
-		try {
-			BuildAccountMapping();
+		BuildAccountMapping();
 
-			sqliteHandle = SQLiteDatabase.openDatabase(dataFile, null,
-					SQLiteDatabase.OPEN_READWRITE
-							| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
-			gncData = new DataCollection();
-			Cursor cursor = sqliteHandle.rawQuery("select * from books", null);
+		sqliteHandle = SQLiteDatabase.openDatabase(dataFile, null,
+				SQLiteDatabase.OPEN_READWRITE
+						| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+		gncData = new DataCollection();
+		Cursor cursor = sqliteHandle.rawQuery("select * from books", null);
+		try {
 			if (cursor.getCount() > 0) {
 				if (cursor.moveToNext()) {
 					// CREATE TABLE books (guid text(32) PRIMARY KEY NOT NULL,
@@ -118,13 +118,15 @@ public class GNCDataHandler {
 					gncData.accounts.put(account.GUID, account);
 				}
 			}
-			cursor.close();
-
-			gncData.completeCollection();
-			dataValid = true;
-		} catch (Exception e) {
-			Log.e(TAG, e.getStackTrace().toString());
 		}
+		catch (Exception e) {
+		}
+		finally {
+			cursor.close();
+		}
+
+		gncData.completeCollection();
+		dataValid = true;
 	}
 	
 	public TreeMap<String, String> GetAccountTypeMapping() {
@@ -214,16 +216,20 @@ public class GNCDataHandler {
 				.rawQuery(
 						"select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid='"
 								+ GUID + "' group by accounts.name", null);
-		Double retVal = 0.0;
-		if (cursor.getCount() > 0) {
-			if (cursor.moveToNext()) {
-				int balIndex = cursor.getColumnIndex("bal");
-				if (!cursor.isNull(balIndex))
-					retVal = cursor.getDouble(balIndex);
+		try {
+			Double retVal = 0.0;
+			if (cursor.getCount() > 0) {
+				if (cursor.moveToNext()) {
+					int balIndex = cursor.getColumnIndex("bal");
+					if (!cursor.isNull(balIndex))
+						retVal = cursor.getDouble(balIndex);
+				}
 			}
+			return retVal;
 		}
-		cursor.close();
-		return retVal;
+		finally {
+			cursor.close();
+		}
 	}
 
 	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
@@ -251,28 +257,30 @@ public class GNCDataHandler {
 				+ types + ") and hidden=0 and non_std_scu=0 order by name";
 
 		Cursor cursor = sqliteHandle.rawQuery(query, null);
-		if (cursor.getCount() > 0) {
-			TreeMap<String, String> listData = new TreeMap<String, String>();
-			while (cursor.moveToNext()) {
-				Account account = this.AccountFromCursor(cursor, false);
+		try {
+			if (cursor.getCount() > 0) {
+				TreeMap<String, String> listData = new TreeMap<String, String>();
+				while (cursor.moveToNext()) {
+					Account account = this.AccountFromCursor(cursor, false);
 
-				if (longAccountNames)
-					listData.put(account.fullName, account.GUID);
-				else {
-					String guid = listData.get(account.name);
-					if (guid == null)
-						listData.put(account.name, account.GUID);
-					else { // We have a name collision
+					if (longAccountNames)
 						listData.put(account.fullName, account.GUID);
+					else {
+						String guid = listData.get(account.name);
+						if (guid == null)
+							listData.put(account.name, account.GUID);
+						else { // We have a name collision
+							listData.put(account.fullName, account.GUID);
+						}
 					}
 				}
-
-			}
+				return listData;
+			} else
+				return null;
+		}
+		finally {
 			cursor.close();
-
-			return listData;
-		} else
-			return null;
+		}
 
 	}
 
@@ -280,23 +288,27 @@ public class GNCDataHandler {
 		Cursor cursor = sqliteHandle.rawQuery(
 				"select * from accounts where parent_guid='" + rootGUID + "' "
 						+ accountFilter + " order by name", null);
-		if (cursor.getCount() > 0) {
-			TreeMap<String, Account> listData = new TreeMap<String, Account>();
-			Account rootAccount = this.GetAccount(rootGUID, true);
-			if (!rootAccount.name.contains("Root"))
-				listData.put(rootGUID, rootAccount);
-			while (cursor.moveToNext()) {
-				Account account = this.AccountFromCursor(cursor, true);
+		try {
+			if (cursor.getCount() > 0) {
+				TreeMap<String, Account> listData = new TreeMap<String, Account>();
+				Account rootAccount = this.GetAccount(rootGUID, true);
+				if (!rootAccount.name.contains("Root"))
+					listData.put(rootGUID, rootAccount);
+				while (cursor.moveToNext()) {
+					Account account = this.AccountFromCursor(cursor, true);
 
-				if (account.hasChildren
-						|| ((int) (account.balance * 100.0)) != 0)
-					listData.put(account.GUID, account);
-			}
+					if (account.hasChildren
+							|| ((int) (account.balance * 100.0)) != 0)
+						listData.put(account.GUID, account);
+				}
+
+				return listData;
+			} else
+				return null;
+		}
+		finally {
 			cursor.close();
-
-			return listData;
-		} else
-			return null;
+		}
 	}
 
 	public String[] GetTransactionDescriptions() {
@@ -307,19 +319,22 @@ public class GNCDataHandler {
 		Cursor cursor = sqliteHandle.rawQuery(
 				"select distinct description from transactions where post_date > "
 						+ lastyear + "0101000000", null);
-		int count = cursor.getCount();
-		if (count == 0)
-			return null;
+		try {
+			int count = cursor.getCount();
+			if (count == 0)
+				return null;
 
-		String[] values = new String[count];
-		int index = 0;
-		while (cursor.moveToNext()) {
-			values[index++] = cursor.getString(cursor
-					.getColumnIndex("description"));
+			String[] values = new String[count];
+			int index = 0;
+			while (cursor.moveToNext()) {
+				values[index++] = cursor.getString(cursor
+						.getColumnIndex("description"));
+			}
+			return values;
 		}
-		cursor.close();
-
-		return values;
+		finally {
+			cursor.close();
+		}
 	}
 
 	private String GenGUID() {
@@ -391,23 +406,31 @@ public class GNCDataHandler {
 		String transSQL = "select guid from transactions where description='"
 				+ description + "' order by post_date desc limit 1;";
 		Cursor cursor = sqliteHandle.rawQuery(transSQL, null);
-		if (cursor.getCount() > 0 && cursor.moveToNext()) {
-			String transGUID = cursor.getString(cursor.getColumnIndex("guid"));
-			String accountsSQL = "select accounts.guid from accounts,splits where tx_guid='"
-					+ transGUID + "' and account_guid=accounts.guid";
-			Cursor accountsCursor = sqliteHandle.rawQuery(accountsSQL, null);
-			int count = accountsCursor.getCount();
-			if (count > 0) {
-				accountGUIDs = new String[count];
-				while (accountsCursor.moveToNext()) {
-					accountGUIDs[index++] = accountsCursor.getString(cursor
-							.getColumnIndex("guid"));
+		try {
+			if (cursor.getCount() > 0 && cursor.moveToNext()) {
+				String transGUID = cursor.getString(cursor.getColumnIndex("guid"));
+				String accountsSQL = "select accounts.guid from accounts,splits where tx_guid='"
+						+ transGUID + "' and account_guid=accounts.guid";
+				Cursor accountsCursor = sqliteHandle.rawQuery(accountsSQL, null);
+				try {
+					int count = accountsCursor.getCount();
+					if (count > 0) {
+						accountGUIDs = new String[count];
+						while (accountsCursor.moveToNext()) {
+							accountGUIDs[index++] = accountsCursor.getString(cursor
+									.getColumnIndex("guid"));
+						}
+					}
+				}
+				finally {
+					accountsCursor.close();
 				}
 			}
-			accountsCursor.close();
+			return accountGUIDs;
 		}
-		cursor.close();
-		return accountGUIDs;
+		finally {
+			cursor.close();
+		}
 	}
 
 	/**
