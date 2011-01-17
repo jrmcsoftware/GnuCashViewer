@@ -212,10 +212,9 @@ public class GNCDataHandler {
 	}
 
 	public Double AccountBalance(String GUID) {
-		Cursor cursor = sqliteHandle
-				.rawQuery(
-						"select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid='"
-								+ GUID + "' group by accounts.name", null);
+		String[] queryArgs = { GUID };
+		String query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
+		Cursor cursor = sqliteHandle.rawQuery(query, queryArgs);
 		try {
 			Double retVal = 0.0;
 			if (cursor.getCount() > 0) {
@@ -236,12 +235,6 @@ public class GNCDataHandler {
 		String query;
 		String types;
 		
-		/*
-		if (expense)
-			types = "'EXPENSE'";
-		else
-			types = "'CREDIT', 'BANK'";
-		*/
 		StringBuffer tb = new StringBuffer();
 		Boolean first = true;
 		for (String at: accountTypes) {
@@ -285,9 +278,10 @@ public class GNCDataHandler {
 	}
 
 	public TreeMap<String, Account> GetSubAccounts(String rootGUID) {
+		String[] queryArgs = { rootGUID };
 		Cursor cursor = sqliteHandle.rawQuery(
-				"select * from accounts where parent_guid='" + rootGUID + "' "
-						+ accountFilter + " order by name", null);
+				"select * from accounts where parent_guid=? "
+						+ accountFilter + " order by name", queryArgs);
 		try {
 			if (cursor.getCount() > 0) {
 				TreeMap<String, Account> listData = new TreeMap<String, Account>();
@@ -403,15 +397,15 @@ public class GNCDataHandler {
 	public String[] GetAccountsFromTransactionDescription(String description) {
 		int index = 0;
 		String[] accountGUIDs = null;
-		String transSQL = "select guid from transactions where description='"
-				+ description + "' order by post_date desc limit 1;";
-		Cursor cursor = sqliteHandle.rawQuery(transSQL, null);
+		String transSQL = "select guid from transactions where description=? order by post_date desc limit 1";
+		String[] transSQLArgs = { description };
+		Cursor cursor = sqliteHandle.rawQuery(transSQL, transSQLArgs);
 		try {
 			if (cursor.getCount() > 0 && cursor.moveToNext()) {
 				String transGUID = cursor.getString(cursor.getColumnIndex("guid"));
-				String accountsSQL = "select accounts.guid from accounts,splits where tx_guid='"
-						+ transGUID + "' and account_guid=accounts.guid";
-				Cursor accountsCursor = sqliteHandle.rawQuery(accountsSQL, null);
+				String accountsSQL = "select accounts.guid from accounts,splits where tx_guid=? and account_guid=accounts.guid";
+				String[] accountsSQLArgs = { transGUID };
+				Cursor accountsCursor = sqliteHandle.rawQuery(accountsSQL, accountsSQLArgs);
 				try {
 					int count = accountsCursor.getCount();
 					if (count > 0) {
