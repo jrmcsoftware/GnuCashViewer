@@ -78,9 +78,7 @@ public class MainView extends TabActivity {
 			Log.i(TAG, "Showing main screen...");
 		if (!app.gncDataHandler.dataValid) {
 			if (app.localLOGV)
-				Log
-						.i(TAG,
-								"GNCDataHandler failed to initialise.. Forcing preferences...");
+				Log.i(TAG, "GNCDataHandler failed to initialise.. Forcing preferences...");
 			forcePreferences(app.res
 					.getString(R.string.message_failed_to_read_data_file));
 			return;

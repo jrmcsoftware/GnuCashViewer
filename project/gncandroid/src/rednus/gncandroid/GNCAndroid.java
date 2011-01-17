@@ -85,7 +85,7 @@ public class GNCAndroid extends Application implements
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 		if (localLOGV) {
-			Log.i(TAG, "Pref " + key + "changed... reading new value...");
+			Log.i(TAG, "Pref " + key + " changed... reading new value...");
 		}
 		if (key.equals(res.getString(R.string.pref_data_file_key))) {
 			// get new value

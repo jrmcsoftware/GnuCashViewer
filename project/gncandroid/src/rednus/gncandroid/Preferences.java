@@ -55,9 +55,7 @@ public class Preferences extends PreferenceActivity {
 					public boolean onPreferenceClick(Preference pref) {
 						if (pref.getKey().equalsIgnoreCase(pref_data_file_key)) {
 							if (app.localLOGV)
-								Log
-										.i(TAG,
-												"Clicked custom field.. show file chooser");
+								Log.i(TAG, "Clicked custom field.. show file chooser");
 							Intent intent = new Intent(
 									"rednus.GNCAndroid.action.FILECHOOSER");
 							startActivityForResult(intent, RESULT_FOR_FILE);
