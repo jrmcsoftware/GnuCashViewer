@@ -28,7 +28,9 @@ public class AccountSpinnerData {
 	 * @param app the app
 	 * @param values the initial account types
 	 */
-	public AccountSpinnerData(GNCAndroid app, String values[]) {
+	public AccountSpinnerData(GNCAndroid theApp, String values[]) {
+		app = theApp;
+		
 		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.GetAccountTypeMapping();
 		int size = accountTypeMapping.size();
 		
