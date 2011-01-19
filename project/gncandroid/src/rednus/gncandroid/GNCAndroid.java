@@ -49,11 +49,7 @@ public class GNCAndroid extends Application implements
 	 * available to read data file.
 	 */
 	public boolean canReadData() {
-		boolean can = true;
-		if (null == dataFile) {
-			can = false;
-		}
-		return can;
+		return dataFile != null;
 	}
 
 	/**
@@ -121,6 +117,8 @@ public class GNCAndroid extends Application implements
 		if (null == dataFile)
 			return false;
 		Log.i(TAG, "Reading Data...");
+		if (gncDataHandler != null)
+			gncDataHandler.close();
 		gncDataHandler = new GNCDataHandler(this, dataFile, longAccountNames);
 		gncDataHandler
 				.GenAccountFilter(getSharedPreferences(SPN, MODE_PRIVATE));

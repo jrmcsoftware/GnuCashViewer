@@ -145,6 +145,7 @@ public class GNCDataHandler {
 			}
 		}
 		catch (Exception e) {
+			return;
 		}
 		finally {
 			cursor.close();
@@ -152,6 +153,11 @@ public class GNCDataHandler {
 
 		gncData.completeCollection();
 		dataValid = true;
+	}
+
+	public void close() {
+		if (sqliteHandle != null)
+			sqliteHandle.close();
 	}
 	
 	public TreeMap<String, String> GetAccountTypeMapping() {
