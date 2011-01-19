@@ -38,8 +38,6 @@ public class GNCAndroid extends Application implements
 	// TAG for this activity
 	private static final String TAG = "GNCAndroid";
 	public static final String SPN = "gnc4aprefs";
-	public final boolean localLOGV = true;
-	// Log information boolean
 	public Resources res;
 	public GNCDataHandler gncDataHandler;
 	private String dataFile = null;
@@ -97,25 +95,19 @@ public class GNCAndroid extends Application implements
 	 *      java.lang.String)
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-		if (localLOGV) {
-			Log.i(TAG, "Pref " + key + " changed... reading new value...");
-		}
+		Log.i(TAG, "Pref " + key + " changed... reading new value...");
 		if (key.equals(res.getString(R.string.pref_data_file_key))) {
 			// get new value
 			String newPath = sp.getString(res
 					.getString(R.string.pref_data_file_key), null);
-			if (localLOGV) {
-				Log.i(TAG, "New value " + String.valueOf(newPath));
-			}
+			Log.i(TAG, "New value " + String.valueOf(newPath));
 			// change value
 			setDataFileChanged(newPath);
 		} else if (key.equals(res.getString(R.string.pref_long_account_names))) {
 			// get new value
 			longAccountNames = sp.getBoolean(res
 					.getString(R.string.pref_long_account_names), false);
-			if (localLOGV) {
-				Log.i(TAG, "New value " + String.valueOf(longAccountNames));
-			}
+			Log.i(TAG, "New value " + String.valueOf(longAccountNames));
 			gncDataHandler.GenAccountFilter(sp);
 			// Set to reload file
 			reloadFile = true;
@@ -128,9 +120,7 @@ public class GNCAndroid extends Application implements
 	public boolean readData() {
 		if (null == dataFile)
 			return false;
-		if (localLOGV) {
-			Log.i(TAG, "Reading Data...");
-		}
+		Log.i(TAG, "Reading Data...");
 		gncDataHandler = new GNCDataHandler(this, dataFile, longAccountNames);
 		gncDataHandler
 				.GenAccountFilter(getSharedPreferences(SPN, MODE_PRIVATE));
@@ -148,9 +138,7 @@ public class GNCAndroid extends Application implements
 		// read shared preferences to get data file
 		dataFile = sp.getString(res.getString(R.string.pref_data_file_key),
 				null);
-		if (localLOGV) {
-			Log.i(TAG, "Data file is " + dataFile);
-		}
+		Log.i(TAG, "Data file is " + dataFile);
 		if (dataFile == null)
 			return;
 		// read if we want long account names
@@ -172,9 +160,6 @@ public class GNCAndroid extends Application implements
 		}
 		// copy new value
 		dataFile = newPath;
-		// add log
-		if (localLOGV) {
-			Log.i(TAG, "Reload file set to " + String.valueOf(reloadFile));
-		}
+		Log.i(TAG, "Reload file set to " + String.valueOf(reloadFile));
 	}
 }

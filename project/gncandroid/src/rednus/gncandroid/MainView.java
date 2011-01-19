@@ -61,8 +61,7 @@ public class MainView extends TabActivity {
 			else
 				showScreen();
 		} else {
-			if (app.localLOGV)
-				Log.i(TAG, "No Data file set.. Forcing preferences...");
+			Log.i(TAG, "No Data file set.. Forcing preferences...");
 			forcePreferences(app.res.getString(R.string.message_set_data_file));
 		}
 	}
@@ -94,11 +93,9 @@ public class MainView extends TabActivity {
 		
 		screensCreated = true;
 		
-		if (app.localLOGV)
-			Log.i(TAG, "Showing main screen...");
+		Log.i(TAG, "Showing main screen...");
 		if (!app.gncDataHandler.dataValid) {
-			if (app.localLOGV)
-				Log.i(TAG, "GNCDataHandler failed to initialise.. Forcing preferences...");
+			Log.i(TAG, "GNCDataHandler failed to initialise.. Forcing preferences...");
 			forcePreferences(app.res
 					.getString(R.string.message_failed_to_read_data_file));
 			return;
@@ -134,8 +131,7 @@ public class MainView extends TabActivity {
 		// // tabHost.addTab(spec);
 		// set default tab
 		tabHost.setCurrentTab(0);
-		if (app.localLOGV)
-			Log.i(TAG, "Showing main screen...Done");
+		Log.i(TAG, "Showing main screen...Done");
 	}
 
 	/*
@@ -190,9 +186,7 @@ public class MainView extends TabActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		// add log entry
-		if (app.localLOGV)
-			Log.i(TAG, "Activity Restarted.. Checking if data file changed...");
+		Log.i(TAG, "Activity Restarted.. Checking if data file changed...");
 		// check if reload flag is set then read data again
 		if (app.isReloadFile() && app.canReadData())
 			// read data

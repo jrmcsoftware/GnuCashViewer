@@ -49,8 +49,7 @@ public class FileChooser extends ListActivity {
 		super.onCreate(savedInstanceState);
 		app = (GNCAndroid) getApplication();
 		// app.res.getString(R.string.pref_data_file_key);
-		if (app.localLOGV)
-			Log.i(TAG, "Filechooser started");
+		Log.i(TAG, "Filechooser started");
 		// make this a dialogue
 		requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		setContentView(R.layout.filechooser);
@@ -152,8 +151,7 @@ public class FileChooser extends ListActivity {
 			 */
 			return;
 		}
-		if (app.localLOGV)
-			Log.i(TAG, "File selected, returning result");
+		Log.i(TAG, "File selected, returning result");
 		// send result
 		Intent i = new Intent();
 		i.putExtra(app.res.getString(R.string.pref_data_file_key), f

@@ -50,7 +50,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class QuickEntryActivity extends Activity {
 	// TAG for this activity
 	private static final String TAG = "QuickEntryActivity";
-	// Log information boolean
 	private GNCAndroid app;
 
 	static final int DATE_DIALOG_ID = 0;
@@ -82,9 +81,7 @@ public class QuickEntryActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		// get application
 		app = (GNCAndroid) getApplication();
-		// add log entry
-		if (app.localLOGV)
-			Log.i(TAG, "Activity created");
+		Log.i(TAG, "Activity created");
 		setContentView(R.layout.quickentry);
 		
 		Button saveButton = (Button) findViewById(R.id.ButtonSave);
@@ -137,9 +134,7 @@ public class QuickEntryActivity extends Activity {
 			}
 		});
 
-		// add log entry
-		if (app.localLOGV)
-			Log.i(TAG, "Activity Finished");
+		Log.i(TAG, "Activity Finished");
 	}
 
 	private void setToFromAdapter(Spinner spinner, String[] values) {

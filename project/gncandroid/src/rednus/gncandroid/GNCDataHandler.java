@@ -467,14 +467,12 @@ public class GNCDataHandler {
 		 * account balances 3. #
 		 */
 		public void completeCollection() {
-			if (app.localLOGV)
-				Log.i(TAG, "Calculating Data...");
+			Log.i(TAG, "Calculating Data...");
 			// get full names
 			updateFullNames();
 			// create account tree
 			createAccountTree();
-			if (app.localLOGV)
-				Log.i(TAG, "Calculating Data...Done");
+			Log.i(TAG, "Calculating Data...Done");
 		}
 
 		/**

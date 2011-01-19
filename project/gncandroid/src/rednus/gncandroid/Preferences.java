@@ -51,8 +51,7 @@ public class Preferences extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		app = (GNCAndroid) getApplication();
-		if (app.localLOGV)
-			Log.i(TAG, "Showing Preferences screen..");
+		Log.i(TAG, "Showing Preferences screen..");
 		// set activity title
 		setTitle(getString(R.string.app_name) + " > "
 				+ app.res.getString(R.string.menu_prefs));
@@ -67,8 +66,7 @@ public class Preferences extends PreferenceActivity {
 				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 					public boolean onPreferenceClick(Preference pref) {
 						if (pref.getKey().equalsIgnoreCase(pref_data_file_key)) {
-							if (app.localLOGV)
-								Log.i(TAG, "Clicked custom field.. show file chooser");
+							Log.i(TAG, "Clicked custom field.. show file chooser");
 							Intent intent = new Intent(
 									"rednus.GNCAndroid.action.FILECHOOSER");
 							startActivityForResult(intent, RESULT_FOR_FILE);
@@ -118,8 +116,7 @@ public class Preferences extends PreferenceActivity {
 		// check if not already set then pass value
 		if (app.getDataFilePath() != null)
 			dataFilePref.setSummary(app.getDataFilePath());
-		if (app.localLOGV)
-			Log.i(TAG, "Showing Preferences screen..Done");
+		Log.i(TAG, "Showing Preferences screen..Done");
 	}
 
 	/*
@@ -132,8 +129,7 @@ public class Preferences extends PreferenceActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == RESULT_FOR_FILE && resultCode == RESULT_OK) {
 			String path = (String) data.getExtras().get(pref_data_file_key);
-			if (app.localLOGV)
-				Log.i(TAG, "Got path " + path + " from file chooser..");
+			Log.i(TAG, "Got path " + path + " from file chooser..");
 			// set file name to summary
 			findPreference(pref_data_file_key).setSummary(path);
 			// set preference value
@@ -154,8 +150,7 @@ public class Preferences extends PreferenceActivity {
 	public void onBackPressed() {
 		// check if required values are set
 		if (!app.canReadData()) {
-			if (app.localLOGV)
-				Log.i(TAG, "Error in preferences - showing error message");
+			Log.i(TAG, "Error in preferences - showing error message");
 			new AlertDialog.Builder(Preferences.this).setTitle(
 					R.string.error_prefs_not_set).setMessage(
 					R.string.error_message_prefs_not_set).setPositiveButton(
@@ -169,8 +164,7 @@ public class Preferences extends PreferenceActivity {
 		}
 		super.onBackPressed();
 		// here finish the activity to free memory
-		if (app.localLOGV)
-			Log.i(TAG, "Activity Finished");
+		Log.i(TAG, "Activity Finished");
 		finish();
 	}
 }

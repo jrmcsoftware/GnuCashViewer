@@ -45,8 +45,7 @@ public class BookDetailsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		app = (GNCAndroid) getApplication();
-		if (app.localLOGV)
-			Log.i(TAG, "Showing Book Details screen..");
+		Log.i(TAG, "Showing Book Details screen..");
 		// set activity title
 		setTitle(getString(R.string.app_descr) + " > "
 				+ app.res.getString(R.string.menu_book));

@@ -59,10 +59,8 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// get application
+		Log.i(TAG, "Creating activity...");
 		app = (GNCAndroid) getApplication();
-		if (app.localLOGV)
-			Log.i(TAG, "Activity created");
 		// First get first object of data
 		dc = app.gncDataHandler.getGncData();
 		getListData(dc.book.rootAccountGUID);
@@ -72,9 +70,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		ListView lv = (ListView) findViewById(R.id.accounts);
 		lv.setAdapter(new AccountsListAdapter(this));
 		lv.setOnItemClickListener(this);
-		// done
-		if (app.localLOGV)
-			Log.i(TAG, "Activity Finished");
+		Log.i(TAG, "Activity created.");
 	}
 
 	/**
@@ -99,8 +95,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	 */
 	public void onItemClick(AdapterView<?> parent, View child, int position,
 			long id) {
-		if (app.localLOGV)
-			Log.i(TAG, "Account Selected");
+		Log.i(TAG, "Account Selected");
 		// get adapter
 		BaseAdapter b = (BaseAdapter) parent.getAdapter();
 		// get current item
@@ -114,8 +109,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		b.notifyDataSetChanged();
 		// reset list position to top
 		parent.scrollTo(0, 0);
-		if (app.localLOGV)
-			Log.i(TAG, "Accounts Refreshed");
+		Log.i(TAG, "Accounts Refreshed");
 	}
 
 	/**
