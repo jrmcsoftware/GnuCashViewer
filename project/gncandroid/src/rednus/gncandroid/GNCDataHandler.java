@@ -74,6 +74,7 @@ public class GNCDataHandler {
 	 */
 	public GNCDataHandler(GNCAndroid app, String dataFile,
 			boolean longAccountNames) {
+		Cursor cursor;
 		this.app = app;
 
 		res = app.getResources();
@@ -85,7 +86,17 @@ public class GNCDataHandler {
 				SQLiteDatabase.OPEN_READWRITE
 						| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
 		gncData = new DataCollection();
-		Cursor cursor = sqliteHandle.rawQuery("select * from books", null);
+		try {
+			cursor = sqliteHandle.rawQuery("select * from books", null);
+		}
+		catch (Exception e) {
+			/* Catch exceptions thrown by rawQuery, but do nothing with them
+			 * Especially, do not set dataValid to true!
+			 * This try/catch cannot be combined with the one which follows because
+			 * cursor might be used uninitialised in the finally block.
+			 */
+			return;
+		}
 		try {
 			if (cursor.getCount() > 0) {
 				if (cursor.moveToNext()) {
