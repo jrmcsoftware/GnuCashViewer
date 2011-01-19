@@ -161,8 +161,9 @@ public class MainView extends TabActivity {
 			return true;
 		case R.id.menu_book:
 			// Start intent to show book details
-			startActivity(new Intent(getBaseContext(),
-					BookDetailsActivity.class));
+			if (app.gncDataHandler.dataValid)
+				startActivity(new Intent(getBaseContext(),
+						BookDetailsActivity.class));
 			return true;
 		case R.id.menu_save:
 			// Save data
