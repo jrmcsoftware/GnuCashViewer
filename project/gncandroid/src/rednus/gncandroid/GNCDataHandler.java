@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -288,6 +289,7 @@ public class GNCDataHandler {
 	}
 
 	public LinkedHashMap<String, Account> GetSubAccounts(String rootGUID) {
+		SharedPreferences sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 		String[] queryArgs = { rootGUID };
 		Cursor cursor = sqliteHandle.rawQuery(
 				"select * from accounts where parent_guid=? "
@@ -301,7 +303,8 @@ public class GNCDataHandler {
 				Account account = this.AccountFromCursor(cursor, true);
 
 				if (account.hasChildren
-						|| ((int) (account.balance * 100.0)) != 0)
+						|| ((int) (account.balance * 100.0)) != 0
+						|| sp.getBoolean(res.getString(R.string.pref_show_zero_total_accounts), false))
 					listData.put(account.GUID, account);
 			}
 
