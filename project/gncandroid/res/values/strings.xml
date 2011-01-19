@@ -118,5 +118,8 @@
 <string name="pref_account_type_trading">account_type_trading</string>
 <string name="account_type_trading">Trading</string>
 
+<string name="pref_include_subaccount_in_balance">include_subaccount_in_balance</string>
+<string name="include_subaccount_in_balance">Include SubAccounts in Balance</string>
+<string name="include_subaccount_in_balance_summary">This slow down startup and should not be used on large data sets</string>
 
 </resources>
