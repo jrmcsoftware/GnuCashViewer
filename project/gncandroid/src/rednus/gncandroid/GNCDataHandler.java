@@ -23,10 +23,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -56,6 +58,7 @@ public class GNCDataHandler {
 	private TreeMap<String, String> accountTypeMapping;
 	private Resources res;
 	public boolean dataValid = false;
+	private String currencyGUID;
 
 	private final String transInsert = "insert into transactions(guid,currency_guid,num,post_date,enter_date,description) values(?,?,?,?,?,?)";
 	private final String splitsInsert = "insert into splits(guid,tx_guid,account_guid,memo,action,reconcile_state,value_num,value_denom,quantity_num,quantity_denom)"
@@ -85,6 +88,29 @@ public class GNCDataHandler {
 		sqliteHandle = SQLiteDatabase.openDatabase(dataFile, null,
 				SQLiteDatabase.OPEN_READWRITE
 						| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+		try {
+			Currency currency = Currency.getInstance(Locale.getDefault());
+			String ccode = currency.getCurrencyCode();	
+			
+			String[] queryArgs = { ccode };
+			
+			cursor = sqliteHandle.rawQuery("select guid from commodities where mnemonic=?", queryArgs);
+			
+			if (cursor.moveToNext())
+				currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
+			else {
+				queryArgs[0] = "USD";
+				cursor = sqliteHandle.rawQuery("select guid from commodities where mnemonic=?", queryArgs);
+				if (cursor.moveToNext())
+					currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
+				else
+					return;
+			}
+		}
+		catch (Exception e) {
+			return;
+		}
+		
 		gncData = new DataCollection();
 		try {
 			cursor = sqliteHandle.rawQuery("select * from books", null);
@@ -392,7 +418,7 @@ public class GNCDataHandler {
 			// post_date text(14), enter_date text(14), description text(2048));
 
 			// First the transaction
-			Object[] transArgs = { tx_guid, "d42c51800f472526f265de2711a36020",
+			Object[] transArgs = { tx_guid, currencyGUID,
 					postDate, "", enterDate, description };
 			sqliteHandle.execSQL(transInsert, transArgs);
 
