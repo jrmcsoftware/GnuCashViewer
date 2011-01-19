@@ -138,11 +138,11 @@ public class AccountSpinnerData {
 	 */
 	private void setBitmapFromAccountList(String values[]) {
 		for(int i=0;i<accountTypeValues.length;i++) {
-			boolean found = false;
-			for(String v: values)
-				if ( accountTypeValues[i].equals(v))
-					found = true;
-			accountTypes[i] = found;
+			for (String v: values)
+				if ( accountTypeValues[i].equals(v)) {
+					accountTypes[i] = true;
+					break;
+				}
 		}		
 	}
 	
