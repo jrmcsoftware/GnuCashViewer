@@ -264,25 +264,22 @@ public class GNCDataHandler {
 
 		Cursor cursor = sqliteHandle.rawQuery(query, null);
 		try {
-			if (cursor.getCount() > 0) {
-				TreeMap<String, String> listData = new TreeMap<String, String>();
-				while (cursor.moveToNext()) {
-					Account account = this.AccountFromCursor(cursor, false);
+			TreeMap<String, String> listData = new TreeMap<String, String>();
+			while (cursor.moveToNext()) {
+				Account account = this.AccountFromCursor(cursor, false);
 
-					if (longAccountNames)
+				if (longAccountNames)
+					listData.put(account.fullName, account.GUID);
+				else {
+					String guid = listData.get(account.name);
+					if (guid == null)
+						listData.put(account.name, account.GUID);
+					else { // We have a name collision
 						listData.put(account.fullName, account.GUID);
-					else {
-						String guid = listData.get(account.name);
-						if (guid == null)
-							listData.put(account.name, account.GUID);
-						else { // We have a name collision
-							listData.put(account.fullName, account.GUID);
-						}
 					}
 				}
-				return listData;
-			} else
-				return null;
+			}
+			return listData;
 		}
 		finally {
 			cursor.close();
@@ -296,22 +293,19 @@ public class GNCDataHandler {
 				"select * from accounts where parent_guid=? "
 						+ accountFilter + " order by name", queryArgs);
 		try {
-			if (cursor.getCount() > 0) {
-				LinkedHashMap<String, Account> listData = new LinkedHashMap<String, Account>();
-				Account rootAccount = this.GetAccount(rootGUID, true);
-				if (!rootAccount.name.contains("Root"))
-					listData.put(rootGUID, rootAccount);
-				while (cursor.moveToNext()) {
-					Account account = this.AccountFromCursor(cursor, true);
+			LinkedHashMap<String, Account> listData = new LinkedHashMap<String, Account>();
+			Account rootAccount = this.GetAccount(rootGUID, true);
+			if (!rootAccount.name.contains("Root"))
+				listData.put(rootGUID, rootAccount);
+			while (cursor.moveToNext()) {
+				Account account = this.AccountFromCursor(cursor, true);
 
-					if (account.hasChildren
-							|| ((int) (account.balance * 100.0)) != 0)
-						listData.put(account.GUID, account);
-				}
+				if (account.hasChildren
+						|| ((int) (account.balance * 100.0)) != 0)
+					listData.put(account.GUID, account);
+			}
 
-				return listData;
-			} else
-				return null;
+			return listData;
 		}
 		finally {
 			cursor.close();
@@ -328,10 +322,8 @@ public class GNCDataHandler {
 						+ lastyear + "0101000000", null);
 		try {
 			int count = cursor.getCount();
-			if (count == 0)
-				return null;
-
 			String[] values = new String[count];
+
 			int index = 0;
 			while (cursor.moveToNext()) {
 				values[index++] = cursor.getString(cursor
