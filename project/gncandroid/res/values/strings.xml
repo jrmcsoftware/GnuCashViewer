@@ -33,6 +33,8 @@
 	<string name="label_amount">Amount:</string>
 	<string name="button_save">Save</string>
 	<string name="button_clear">Clear</string>
+	<string name="alert_select_title">Select accounts</string>
+	<string name="alert_select_message">Please set the "To" and "From" accounts.</string>
 	<string name="app_version_history">Version 0.1 - Testing.</string>
 	<string name="alert_dialog_ok">Ok</string>
 	<string name="app_about_text">About GnuCash Companion for Android.</string>

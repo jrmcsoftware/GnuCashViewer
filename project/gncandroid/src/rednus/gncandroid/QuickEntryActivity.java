@@ -111,6 +111,20 @@ public class QuickEntryActivity extends Activity {
 				int toPos = mTo.getSelectedItemPosition();
 				int fromPos = mFrom.getSelectedItemPosition();
 
+				Log.v(TAG, "Save button clicked. toPos = " + toPos + ", fromPos = " + fromPos);
+				if (toPos < 0 || fromPos < 0) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
+					builder.setTitle(R.string.alert_select_title).setMessage(R.string.alert_select_message);
+					builder.setPositiveButton(R.string.alert_dialog_ok,
+                                                                                new DialogInterface.OnClickListener() {
+                                                                                        public void onClick(
+                                                                                                        DialogInterface dialog,
+                                                                                                        int whichButton) {
+                                                                                        }
+                                                                                });
+					builder.create().show();
+					return;
+				}
 				String toGUID = toAccountData.getAccountGUID(toPos);
 				String fromGUID = fromAccountData.getAccountGUID(fromPos);
 
