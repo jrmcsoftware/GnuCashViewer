@@ -262,7 +262,7 @@ public class GNCDataHandler {
 		return account;
 	}
 
-	public Account AccountFromCursor(Cursor cursor, boolean getBalance) {
+	private Account AccountFromCursor(Cursor cursor, boolean getBalance) {
 		return GetAccount(cursor.getString(cursor.getColumnIndex("guid")),
 				getBalance);
 	}
@@ -310,6 +310,8 @@ public class GNCDataHandler {
 			TreeMap<String, String> listData = new TreeMap<String, String>();
 			while (cursor.moveToNext()) {
 				Account account = this.AccountFromCursor(cursor, false);
+				if ( account == null )
+					return null;
 
 				if (longAccountNames)
 					listData.put(account.fullName, account.GUID);
@@ -339,10 +341,15 @@ public class GNCDataHandler {
 		try {
 			LinkedHashMap<String, Account> listData = new LinkedHashMap<String, Account>();
 			Account rootAccount = this.GetAccount(rootGUID, true);
+			if ( rootAccount == null ) // this should never happen
+				return null;
+			
 			if (!rootAccount.name.contains("Root"))
 				listData.put(rootGUID, rootAccount);
 			while (cursor.moveToNext()) {
 				Account account = this.AccountFromCursor(cursor, true);
+				if ( account == null )  // this shouldn't happen either
+					return null;
 
 				if (account.hasChildren
 						|| ((int) (account.balance * 100.0)) != 0

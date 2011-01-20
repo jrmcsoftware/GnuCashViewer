@@ -124,6 +124,10 @@ public class AccountSpinnerData {
 	private void constructAccountLists(String[] filter) {
 		TreeMap<String, String> accounts = app.gncDataHandler
 				.GetAccountList(filter);
+		
+		if ( accounts == null )
+			return;
+		
 		accountNames = new String[accounts.size()];
 		accountGUIDs = new String[accounts.size()];
 		accounts.keySet().toArray(accountNames);

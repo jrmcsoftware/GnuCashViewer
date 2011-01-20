@@ -38,6 +38,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -131,8 +132,11 @@ public class QuickEntryActivity extends Activity {
 				String date = dateButton.getText().toString();
 				String amount = mAmount.getText().toString();
 
-				app.gncDataHandler.insertTransaction(toGUID, fromGUID,
+				boolean result = app.gncDataHandler.insertTransaction(toGUID, fromGUID,
 						mDescription.getText().toString(), amount, date);
+				if ( result == false )
+					Toast.makeText(QuickEntryActivity.this, "Insert failed!", Toast.LENGTH_LONG);
+					
 			}
 		});
 
@@ -332,17 +336,19 @@ public class QuickEntryActivity extends Activity {
 							.getText().toString());
 			String[] toAccountGUIDs = toAccountData.getAccountGUIDs();
 			String[] fromAccountGUIDs = fromAccountData.getAccountGUIDs();
-			for (int i = 0; i < accountGUIDs.length; i++) {
-				for (int j = 0; j < toAccountGUIDs.length; j++)
-					if (toAccountGUIDs[j].equals(accountGUIDs[i])) {
-						mTo.setSelection(j);
-						break;
-					}
-				for (int k = 0; k < fromAccountGUIDs.length; k++)
-					if (fromAccountGUIDs[k].equals(accountGUIDs[i])) {
-						mFrom.setSelection(k);
-						break;
-					}
+			if ( accountGUIDs != null ) {
+				for (int i = 0; i < accountGUIDs.length; i++) {
+					for (int j = 0; j < toAccountGUIDs.length; j++)
+						if (toAccountGUIDs[j].equals(accountGUIDs[i])) {
+							mTo.setSelection(j);
+							break;
+						}
+					for (int k = 0; k < fromAccountGUIDs.length; k++)
+						if (fromAccountGUIDs[k].equals(accountGUIDs[i])) {
+							mFrom.setSelection(k);
+							break;
+						}
+				}
 			}
 		}
 	}
