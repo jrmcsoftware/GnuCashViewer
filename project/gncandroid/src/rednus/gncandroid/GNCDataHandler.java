@@ -221,21 +221,20 @@ public class GNCDataHandler {
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_stock),"STOCK");
 		accountTypeMapping.put(res.getString(R.string.account_type_stock),"STOCK");
 
-		// TODO need the account_type string for these 
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_cash),"TODO");
-		accountTypeMapping.put(res.getString(R.string.account_type_cash),"TODO");
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_cash),"CASH");
+		accountTypeMapping.put(res.getString(R.string.account_type_cash),"CASH");
 		
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_currency),"TODO");
-		accountTypeMapping.put(res.getString(R.string.account_type_currency),"TODO");
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_currency),"CURRENCY");
+		accountTypeMapping.put(res.getString(R.string.account_type_currency),"CURRENCY");
 		
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_receivable),"TODO");
-		accountTypeMapping.put(res.getString(R.string.account_type_a_receivable),"TODO");
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_receivable),"RECEIVABLE");
+		accountTypeMapping.put(res.getString(R.string.account_type_a_receivable),"RECEIVABLE");
 		
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_payable),"TODO");
-		accountTypeMapping.put(res.getString(R.string.account_type_a_payable),"TODO");
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_payable),"PAYABLE");
+		accountTypeMapping.put(res.getString(R.string.account_type_a_payable),"PAYABLE");
 		
-		accountPrefMapping.put(res.getString(R.string.pref_account_type_trading),"TODO");
-		accountTypeMapping.put(res.getString(R.string.account_type_trading),"TODO");
+		accountPrefMapping.put(res.getString(R.string.pref_account_type_trading),"TRADING");
+		accountTypeMapping.put(res.getString(R.string.account_type_trading),"TRADING");
 	}
 
 	public void GenAccountFilter(SharedPreferences sp) {
