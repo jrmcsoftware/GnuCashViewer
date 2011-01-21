@@ -120,16 +120,14 @@ public class GNCDataHandler {
 			return;
 		}
 		try {
-			if (cursor.getCount() > 0) {
-				if (cursor.moveToNext()) {
-					// CREATE TABLE books (guid text(32) PRIMARY KEY NOT NULL,
-					// root_account_guid text(32) NOT NULL, root_template_guid
-					// text(32) NOT NULL);
-					gncData.book.GUID = cursor.getString(cursor
-							.getColumnIndex("guid"));
-					gncData.book.rootAccountGUID = cursor.getString(cursor
-							.getColumnIndex("root_account_guid"));
-				}
+			if (cursor.moveToNext()) {
+				// CREATE TABLE books (guid text(32) PRIMARY KEY NOT NULL,
+				// root_account_guid text(32) NOT NULL, root_template_guid
+				// text(32) NOT NULL);
+				gncData.book.GUID = cursor.getString(cursor
+						.getColumnIndex("guid"));
+				gncData.book.rootAccountGUID = cursor.getString(cursor
+						.getColumnIndex("root_account_guid"));
 			}
 			cursor.close();
 
@@ -138,32 +136,30 @@ public class GNCDataHandler {
 			// cursor =
 			// sqliteHandle.rawQuery("select *,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts left outer join splits on splits.account_guid=accounts.guid group by accounts.name",null);
 			cursor = sqliteHandle.rawQuery("select * from accounts", null);
-			if (cursor.getCount() > 0) {
-				while (cursor.moveToNext()) {
-					Account account = new Account();
-					// CREATE TABLE accounts (guid text(32) PRIMARY KEY NOT
-					// NULL, name text(2048) NOT NULL, account_type text(2048)
-					// NOT NULL, commodity_guid text(32), commodity_scu integer
-					// NOT NULL, non_std_scu integer NOT NULL, parent_guid
-					// text(32), code text(2048), description text(2048), hidden
-					// integer, placeholder integer);
-					account.GUID = cursor.getString(cursor
-							.getColumnIndex("guid"));
-					account.name = cursor.getString(cursor
-							.getColumnIndex("name"));
-					account.type = cursor.getString(cursor
-							.getColumnIndex("account_type"));
-					account.parentGUID = cursor.getString(cursor
-							.getColumnIndex("parent_guid"));
-					account.code = cursor.getString(cursor
-							.getColumnIndex("code"));
-					account.description = cursor.getString(cursor
-							.getColumnIndex("description"));
-					account.placeholder = cursor.getInt(cursor
-							.getColumnIndex("placeholder")) != 0;
+			while (cursor.moveToNext()) {
+				Account account = new Account();
+				// CREATE TABLE accounts (guid text(32) PRIMARY KEY NOT
+				// NULL, name text(2048) NOT NULL, account_type text(2048)
+				// NOT NULL, commodity_guid text(32), commodity_scu integer
+				// NOT NULL, non_std_scu integer NOT NULL, parent_guid
+				// text(32), code text(2048), description text(2048), hidden
+				// integer, placeholder integer);
+				account.GUID = cursor.getString(cursor
+						.getColumnIndex("guid"));
+				account.name = cursor.getString(cursor
+						.getColumnIndex("name"));
+				account.type = cursor.getString(cursor
+						.getColumnIndex("account_type"));
+				account.parentGUID = cursor.getString(cursor
+						.getColumnIndex("parent_guid"));
+				account.code = cursor.getString(cursor
+						.getColumnIndex("code"));
+				account.description = cursor.getString(cursor
+						.getColumnIndex("description"));
+				account.placeholder = cursor.getInt(cursor
+						.getColumnIndex("placeholder")) != 0;
 
-					gncData.accounts.put(account.GUID, account);
-				}
+				gncData.accounts.put(account.GUID, account);
 			}
 		}
 		catch (Exception e) {
@@ -278,15 +274,13 @@ public class GNCDataHandler {
 		Cursor cursor = sqliteHandle.rawQuery(query, queryArgs);
 		try {
 			Double retVal = 0.0;
-			if (cursor.getCount() > 0) {
-				if (cursor.moveToNext()) {
-					int balIndex = cursor.getColumnIndex("bal");
-					if (!cursor.isNull(balIndex))
-						retVal = cursor.getDouble(balIndex);
-					int commodityGuidIndex = cursor.getColumnIndex("commodity_guid");
-					if (!cursor.isNull(commodityGuidIndex))
-						commodityGUID = cursor.getString(commodityGuidIndex);
-				}
+			if (cursor.moveToNext()) {
+				int balIndex = cursor.getColumnIndex("bal");
+				if (!cursor.isNull(balIndex))
+					retVal = cursor.getDouble(balIndex);
+				int commodityGuidIndex = cursor.getColumnIndex("commodity_guid");
+				if (!cursor.isNull(commodityGuidIndex))
+					commodityGUID = cursor.getString(commodityGuidIndex);
 			}
 			if ( equity ) {
 				String priceQuery = "select CAST(value_num AS REAL)/value_denom as price from prices where commodity_guid=? order by date desc limit 1";
@@ -501,31 +495,17 @@ public class GNCDataHandler {
 	}
 
 	public String[] GetAccountsFromTransactionDescription(String description) {
-		int index = 0;
-		String[] accountGUIDs = null;
-		String transSQL = "select guid from transactions where description=? order by post_date desc limit 1";
+		String transSQL = "select accounts.guid from accounts, splits where tx_guid = (select guid from transactions where description=? order by post_date desc limit 1) and account_guid = accounts.guid;";
 		String[] transSQLArgs = { description };
 		Cursor cursor = sqliteHandle.rawQuery(transSQL, transSQLArgs);
 		try {
-			if (cursor.getCount() > 0 && cursor.moveToNext()) {
-				String transGUID = cursor.getString(cursor.getColumnIndex("guid"));
-				String accountsSQL = "select accounts.guid from accounts,splits where tx_guid=? and account_guid=accounts.guid";
-				String[] accountsSQLArgs = { transGUID };
-				Cursor accountsCursor = sqliteHandle.rawQuery(accountsSQL, accountsSQLArgs);
-				try {
-					int count = accountsCursor.getCount();
-					if (count > 0) {
-						accountGUIDs = new String[count];
-						while (accountsCursor.moveToNext()) {
-							accountGUIDs[index++] = accountsCursor.getString(cursor
-									.getColumnIndex("guid"));
-						}
-					}
-				}
-				finally {
-					accountsCursor.close();
-				}
-			}
+			int count = cursor.getCount();
+			int index = 0;
+			String[] accountGUIDs = new String[count];
+			if (cursor.moveToNext())
+				while (cursor.moveToNext())
+					accountGUIDs[index++] = cursor.getString(cursor
+							.getColumnIndex("guid"));
 			return accountGUIDs;
 		}
 		finally {
