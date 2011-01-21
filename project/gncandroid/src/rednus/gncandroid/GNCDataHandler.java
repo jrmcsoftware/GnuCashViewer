@@ -60,10 +60,6 @@ public class GNCDataHandler {
 	public boolean dataValid = false;
 	private String currencyGUID;
 
-	private final String transInsert = "insert into transactions(guid,currency_guid,num,post_date,enter_date,description) values(?,?,?,?,?,?)";
-	private final String splitsInsert = "insert into splits(guid,tx_guid,account_guid,memo,action,reconcile_state,value_num,value_denom,quantity_num,quantity_denom)"
-			+ " values(?,?,?,?,?,?,?,?,?,?)";
-
 	/**
 	 * On create the handler create new DataCollection, create input stream for
 	 * file and depending on the parser used the data will be parsed.
@@ -447,6 +443,10 @@ public class GNCDataHandler {
 	public boolean insertTransaction(String toGUID, String fromGUID,
 			String description, String amount, String date) {
 
+		String transInsert = "insert into transactions(guid,currency_guid,num,post_date,enter_date,description) values(?,?,?,?,?,?)";
+		String splitsInsert = "insert into splits(guid,tx_guid,account_guid,memo,action,reconcile_state,value_num,value_denom,quantity_num,quantity_denom)"
+				+ " values(?,?,?,?,?,?,?,?,?,?)";
+
 		try {
 			sqliteHandle.beginTransaction();
 
@@ -474,7 +474,7 @@ public class GNCDataHandler {
 
 			// First the transaction
 			Object[] transArgs = { tx_guid, currencyGUID,
-					postDate, "", enterDate, description };
+					"", postDate, enterDate, description };
 			sqliteHandle.execSQL(transInsert, transArgs);
 
 			double d = Double.parseDouble(amount);
