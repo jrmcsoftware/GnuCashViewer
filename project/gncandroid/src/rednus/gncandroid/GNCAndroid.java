@@ -127,10 +127,17 @@ public class GNCAndroid extends Application implements
 		Log.i(TAG, "Reading Data...");
 		if (gncDataHandler != null)
 			gncDataHandler.close();
-		gncDataHandler = new GNCDataHandler(this, dataFile, longAccountNames);
-		gncDataHandler
-				.GenAccountFilter(getSharedPreferences(SPN, MODE_PRIVATE));
-		reloadFile = false;
+		try {
+			gncDataHandler = new GNCDataHandler(this);
+			reloadFile = false;
+			gncDataHandler
+					.GenAccountFilter(getSharedPreferences(SPN, MODE_PRIVATE));
+		}
+		catch (Exception e) {
+			Log.v(TAG, e.toString());
+			gncDataHandler = null;
+			return false;
+		}
 		return true;
 	}
 

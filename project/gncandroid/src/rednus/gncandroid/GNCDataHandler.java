@@ -40,6 +40,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+class InvalidDataException extends Exception {
+	public InvalidDataException() {
+	}
+
+	public InvalidDataException(String msg) {
+		super(msg);
+	}
+}
+
 /**
  * This class implements methods to read data file and create a data collection
  * and also methods to update the data file.
@@ -57,7 +66,6 @@ public class GNCDataHandler {
 	private TreeMap<String, String> accountPrefMapping;
 	private TreeMap<String, String> accountTypeMapping;
 	private Resources res;
-	public boolean dataValid = false;
 	private String currencyGUID;
 
 	/**
@@ -68,11 +76,11 @@ public class GNCDataHandler {
 	 *            GNCAndroid Application reference
 	 * @param dataFile
 	 *            String containing path to data file
-	 * @param compressed
-	 *            Boolean to specify if the data file is compressed or not
+	 * @throws Exception
+	 *         if there was a problem reading the data file.
 	 */
 	public GNCDataHandler(GNCAndroid app, String dataFile,
-			boolean longAccountNames) {
+			boolean longAccountNames) throws Exception {
 		Cursor cursor;
 		this.app = app;
 
@@ -104,20 +112,17 @@ public class GNCDataHandler {
 			}
 		}
 		catch (Exception e) {
-			return;
+			sqliteHandle.close();
+			sqliteHandle = null;
+			throw e;
 		}
 		
 		gncData = new DataCollection();
 		try {
 			cursor = sqliteHandle.rawQuery("select * from books", null);
 		}
-		catch (Exception e) {
-			/* Catch exceptions thrown by rawQuery, but do nothing with them
-			 * Especially, do not set dataValid to true!
-			 * This try/catch cannot be combined with the one which follows because
-			 * cursor might be used uninitialised in the finally block.
-			 */
-			return;
+		finally {
+			cursor.close();
 		}
 		try {
 			if (cursor.moveToNext()) {
@@ -162,15 +167,11 @@ public class GNCDataHandler {
 				gncData.accounts.put(account.GUID, account);
 			}
 		}
-		catch (Exception e) {
-			return;
-		}
 		finally {
 			cursor.close();
 		}
 
 		gncData.completeCollection();
-		dataValid = true;
 	}
 
 	public void close() {

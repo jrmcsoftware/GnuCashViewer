@@ -88,12 +88,6 @@ public class MainView extends TabActivity {
 	 */
 	private void showScreen() {
 		Log.i(TAG, "Showing main screen...");
-		if (!app.gncDataHandler.dataValid) {
-			Log.i(TAG, "GNCDataHandler failed to initialise.. Forcing preferences...");
-			forcePreferences(app.res
-					.getString(R.string.message_failed_to_read_data_file));
-			return;
-		}
 		if ( screensCreated )
 			return;
 
@@ -160,7 +154,7 @@ public class MainView extends TabActivity {
 			return true;
 		case R.id.menu_book:
 			// Start intent to show book details
-			if (app.gncDataHandler.dataValid)
+			if (app.gncDataHandler != null)
 				startActivity(new Intent(getBaseContext(),
 						BookDetailsActivity.class));
 			return true;
@@ -238,7 +232,13 @@ public class MainView extends TabActivity {
 
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
-			showScreen();
+			if (result != null && result)
+				showScreen();
+			else {
+				Log.i(TAG, "GNCDataHandler failed to initialise... Forcing preferences...");
+				forcePreferences(app.res
+						.getString(R.string.message_failed_to_read_data_file));
+			}
 		}
 	}
 }
