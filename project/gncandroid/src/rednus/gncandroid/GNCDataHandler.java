@@ -92,24 +92,11 @@ public class GNCDataHandler {
 		sqliteHandle = SQLiteDatabase.openDatabase(dataFile, null,
 				SQLiteDatabase.OPEN_READWRITE
 						| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+		Currency currency = Currency.getInstance(Locale.getDefault());
+		String ccode = currency.getCurrencyCode();
+
 		try {
-			Currency currency = Currency.getInstance(Locale.getDefault());
-			String ccode = currency.getCurrencyCode();	
-			
-			String[] queryArgs = { ccode };
-			
-			cursor = sqliteHandle.rawQuery("select guid from commodities where mnemonic=?", queryArgs);
-			
-			if (cursor.moveToNext())
-				currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
-			else {
-				queryArgs[0] = "USD";
-				cursor = sqliteHandle.rawQuery("select guid from commodities where mnemonic=?", queryArgs);
-				if (cursor.moveToNext())
-					currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
-				else
-					return;
-			}
+			cursor = sqliteHandle.rawQuery("select guid, mnemonic from commodities where namespace = 'CURRENCY';", null);
 		}
 		catch (Exception e) {
 			sqliteHandle.close();
@@ -119,11 +106,30 @@ public class GNCDataHandler {
 		
 		gncData = new DataCollection();
 		try {
-			cursor = sqliteHandle.rawQuery("select * from books", null);
+			// There had better be at least one currency...
+			if (cursor.moveToNext()) {
+				// If it's the only one, easy.
+				currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
+				if (cursor.getCount() > 1) {
+					// If there are more than one, prefer the one given in the default Locale.
+					do {
+						String mnemonic = cursor.getString(cursor.getColumnIndex("mnenomic"));
+						if (mnemonic == ccode)
+							currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
+					} while (cursor.moveToNext());
+				}
+			}
+			else {
+				sqliteHandle.close();
+				sqliteHandle = null;
+				throw new InvalidDataException("Could not determine default currency.");
+			}
 		}
 		finally {
 			cursor.close();
 		}
+
+		cursor = sqliteHandle.rawQuery("select * from books", null);
 		try {
 			if (cursor.moveToNext()) {
 				// CREATE TABLE books (guid text(32) PRIMARY KEY NOT NULL,
