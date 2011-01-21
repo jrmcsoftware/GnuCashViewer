@@ -59,9 +59,9 @@ class InvalidDataException extends Exception {
 public class GNCDataHandler {
 	private static final String TAG = "GNCDataHandler"; // TAG for this activity
 	private GNCAndroid app; // Application
-	private DataCollection gncData; // Data Collection
+	private DataCollection gncData = new DataCollection(); // Data Collection
 	private SQLiteDatabase sqliteHandle;
-	private boolean longAccountNames;
+	private SharedPreferences sp;
 	private String accountFilter;
 	private TreeMap<String, String> accountPrefMapping;
 	private TreeMap<String, String> accountTypeMapping;
@@ -74,22 +74,19 @@ public class GNCDataHandler {
 	 * 
 	 * @param app
 	 *            GNCAndroid Application reference
-	 * @param dataFile
-	 *            String containing path to data file
 	 * @throws Exception
 	 *         if there was a problem reading the data file.
 	 */
-	public GNCDataHandler(GNCAndroid app, String dataFile,
-			boolean longAccountNames) throws Exception {
+	public GNCDataHandler(GNCAndroid app) throws Exception {
 		Cursor cursor;
 		this.app = app;
-
 		res = app.getResources();
+		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 
-		this.longAccountNames = longAccountNames;
 		BuildAccountMapping();
+		GenAccountFilter();
 
-		sqliteHandle = SQLiteDatabase.openDatabase(dataFile, null,
+		sqliteHandle = SQLiteDatabase.openDatabase(sp.getString(res.getString(R.string.pref_data_file_key), null), null,
 				SQLiteDatabase.OPEN_READWRITE
 						| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
 		Currency currency = Currency.getInstance(Locale.getDefault());
@@ -103,8 +100,7 @@ public class GNCDataHandler {
 			sqliteHandle = null;
 			throw e;
 		}
-		
-		gncData = new DataCollection();
+
 		try {
 			// There had better be at least one currency...
 			if (cursor.moveToNext()) {
@@ -236,7 +232,7 @@ public class GNCDataHandler {
 		accountTypeMapping.put(res.getString(R.string.account_type_trading),"TRADING");
 	}
 
-	public void GenAccountFilter(SharedPreferences sp) {
+	public void GenAccountFilter() {
 		StringBuffer filter = new StringBuffer();
 		if (!sp.getBoolean(res.getString(R.string.pref_show_hidden_account),
 				false))
@@ -359,7 +355,7 @@ public class GNCDataHandler {
 				if ( account == null )
 					return null;
 
-				if (longAccountNames)
+				if (sp.getBoolean(res.getString(R.string.pref_long_account_names), false))
 					listData.put(account.fullName, account.GUID);
 				else {
 					String guid = listData.get(account.name);

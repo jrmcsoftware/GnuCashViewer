@@ -20,6 +20,8 @@ package rednus.gncandroid;
 
 import rednus.gncandroid.GNCDataHandler.DataCollection;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TableLayout;
@@ -34,6 +36,7 @@ import android.widget.TextView;
 public class BookDetailsActivity extends Activity {
 	private static final String TAG = "BookDetailsActivity";
 	private GNCAndroid app;
+	private SharedPreferences sp;
 
 	/*
 	 * When activity is started, and if Data file is already read, then display
@@ -45,6 +48,7 @@ public class BookDetailsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		app = (GNCAndroid) getApplication();
+		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 		Log.i(TAG, "Showing Book Details screen..");
 		// set activity title
 		setTitle(getString(R.string.app_descr) + " > "
@@ -60,8 +64,8 @@ public class BookDetailsActivity extends Activity {
 
 	private void setFieldValues() {
 		// get data file
-		((TextView) this.findViewById(R.id.data_file_name)).setText(app
-				.getDataFilePath());
+		((TextView) this.findViewById(R.id.data_file_name))
+				.setText(sp.getString(app.res.getString(R.string.pref_data_file_key), null));
 		// get data collection
 		DataCollection gncData = app.gncDataHandler.getGncData();
 		// set book version

@@ -25,6 +25,7 @@ import rednus.gncandroid.GNCDataHandler.Account;
 import rednus.gncandroid.GNCDataHandler.DataCollection;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	private String currRootGUID;
 	private Map<String, Account> listData = new TreeMap<String, Account>();
 	private DataCollection dc;
+	private SharedPreferences sp;
 
 	/*
 	 * When activity is started, and if Data file is already read, then display
@@ -61,6 +63,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "Creating activity...");
 		app = (GNCAndroid) getApplication();
+		sp = getSharedPreferences(GNCAndroid.SPN, MODE_PRIVATE);
 		// First get first object of data
 		dc = app.gncDataHandler.getGncData();
 		getListData(dc.book.rootAccountGUID);
@@ -82,7 +85,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	private void getListData(String rootGUID) {
 		// get root account
 		listData = app.gncDataHandler.GetSubAccounts(rootGUID);
-		if ( app.includeSubaccountInBalance )
+		if ( sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false) )
 			app.gncDataHandler.getAccountBalanceWithChildren(rootGUID);
 
 		currRootGUID = rootGUID;
@@ -185,7 +188,11 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			account = (Account) getItem(position);
 			item.txvAccName.setText(account.name);
 			
-			Double balance = app.includeSubaccountInBalance?account.balanceWithChildren:account.balance;
+			Double balance;
+			if (sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false))
+				balance = account.balanceWithChildren;
+			else
+				balance = account.balance;
 			
 			item.txvBalance.setText(String.valueOf(NumberFormat
 					.getCurrencyInstance().format(balance)));

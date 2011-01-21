@@ -40,9 +40,7 @@ public class GNCAndroid extends Application implements
 	public static final String SPN = "gnc4aprefs";
 	public Resources res;
 	public GNCDataHandler gncDataHandler;
-	private String dataFile = null;
-	private boolean longAccountNames = false;
-	public boolean includeSubaccountInBalance = false;
+	private SharedPreferences sp;
 	private boolean reloadFile = true;
 
 	/**
@@ -50,14 +48,7 @@ public class GNCAndroid extends Application implements
 	 * available to read data file.
 	 */
 	public boolean canReadData() {
-		return dataFile != null;
-	}
-
-	/**
-	 * Returns data file path
-	 */
-	public String getDataFilePath() {
-		return dataFile;
+		return sp.getString(res.getString(R.string.pref_data_file_key), null) != null;
 	}
 
 	/**
@@ -78,8 +69,9 @@ public class GNCAndroid extends Application implements
 		super.onCreate();
 		// keep a copy of resources for later use in application
 		res = getResources();
-		// read preferences
-		readPreferences();
+		sp = getSharedPreferences(SPN, MODE_PRIVATE);
+		// set listener to this
+		sp.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	/**
@@ -93,45 +85,22 @@ public class GNCAndroid extends Application implements
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 		Log.i(TAG, "Pref " + key + " changed... reading new value...");
-		if (key.equals(res.getString(R.string.pref_data_file_key))) {
-			// get new value
-			String newPath = sp.getString(res
-					.getString(R.string.pref_data_file_key), null);
-			Log.i(TAG, "New value " + String.valueOf(newPath));
-			// change value
-			setDataFileChanged(newPath);
-		} else if (key.equals(res.getString(R.string.pref_long_account_names))) {
-			// get new value
-			longAccountNames = sp.getBoolean(res
-					.getString(R.string.pref_long_account_names), false);
-			Log.i(TAG, "New value " + String.valueOf(longAccountNames));
-			gncDataHandler.GenAccountFilter(sp);
-			// Set to reload file
-			reloadFile = true;
-		} else if (key.equals(res.getString(R.string.pref_include_subaccount_in_balance))) {
-			// get new value
-			includeSubaccountInBalance = sp.getBoolean(res
-					.getString(R.string.pref_include_subaccount_in_balance), false);
-			Log.i(TAG, "New value " + String.valueOf(includeSubaccountInBalance));
-			// Set to reload file
-			reloadFile = true;
-		}
+		// Set to reload file
+		reloadFile = true;
 	}
 
 	/**
 	 * Creates new gncDataHandler with values from preferences
 	 */
 	public boolean readData() {
-		if (null == dataFile)
+		if (sp.getString(res.getString(R.string.pref_data_file_key), null) == null)
 			return false;
-		Log.i(TAG, "Reading Data...");
+		Log.i(TAG, "Reading Data from " + sp.getString(res.getString(R.string.pref_data_file_key), null) + "...");
 		if (gncDataHandler != null)
 			gncDataHandler.close();
 		try {
 			gncDataHandler = new GNCDataHandler(this);
 			reloadFile = false;
-			gncDataHandler
-					.GenAccountFilter(getSharedPreferences(SPN, MODE_PRIVATE));
 		}
 		catch (Exception e) {
 			Log.v(TAG, e.toString());
@@ -139,43 +108,5 @@ public class GNCAndroid extends Application implements
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * This method reads preferences and stores in private attributes.
-	 */
-	private void readPreferences() {
-		SharedPreferences sp = getSharedPreferences(SPN, MODE_PRIVATE);
-		// set listener to this
-		sp.registerOnSharedPreferenceChangeListener(this);
-		// read shared preferences to get data file
-		dataFile = sp.getString(res.getString(R.string.pref_data_file_key),
-				null);
-		Log.i(TAG, "Data file is " + dataFile);
-		if (dataFile == null)
-			return;
-		// read if we want long account names
-		longAccountNames = sp.getBoolean(res
-				.getString(R.string.pref_long_account_names), false);
-		
-		includeSubaccountInBalance = sp.getBoolean(res
-				.getString(R.string.pref_include_subaccount_in_balance), false);
-	}
-
-	/**
-	 * This method check old and new value of data file path and sets flag to
-	 * reload file
-	 * 
-	 * @param newPath
-	 */
-	private void setDataFileChanged(String newPath) {
-		// set file to be reloaded if changed
-		if ((null == dataFile && !newPath.equals(""))
-				|| (null != dataFile && !dataFile.equals(newPath))) {
-			reloadFile = true;
-		}
-		// copy new value
-		dataFile = newPath;
-		Log.i(TAG, "Reload file set to " + String.valueOf(reloadFile));
 	}
 }

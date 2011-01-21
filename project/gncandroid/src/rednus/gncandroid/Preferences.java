@@ -41,7 +41,7 @@ public class Preferences extends PreferenceActivity {
 	private String pref_data_file_key;
 
 	/*
-	 * On create shows preferences from XML. Sets listner to file chooser as
+	 * On create shows preferences from XML. Sets listener to file chooser as
 	 * self and starts file chooser activity when clicked. Also shows, about,
 	 * help and version dialogs.
 	 * 
@@ -113,14 +113,12 @@ public class Preferences extends PreferenceActivity {
 				return true;
 			}
 		});
-		// check if not already set then pass value
-		if (app.getDataFilePath() != null)
-			dataFilePref.setSummary(app.getDataFilePath());
+		dataFilePref.setSummary(dataFilePref.getSharedPreferences().getString(app.res.getString(R.string.pref_data_file_key), "No data file selected."));
 		Log.i(TAG, "Showing Preferences screen..Done");
 	}
 
 	/*
-	 * Gets return from FileCHooser activity for selected file name
+	 * Gets return from FileChooser activity for selected file name
 	 * 
 	 * @see android.preference.PreferenceActivity#onActivityResult(int, int,
 	 * android.content.Intent)
