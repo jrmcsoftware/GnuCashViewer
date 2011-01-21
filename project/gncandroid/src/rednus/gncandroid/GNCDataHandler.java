@@ -257,7 +257,7 @@ public class GNCDataHandler {
 			return null;
 
 		if (account.balance == null && getBalance)
-			account.balance = this.AccountBalance(account.GUID);
+			account.balance = this.AccountBalance(account);
 
 		return account;
 	}
@@ -267,9 +267,18 @@ public class GNCDataHandler {
 				getBalance);
 	}
 
-	public Double AccountBalance(String GUID) {
-		String[] queryArgs = { GUID };
-		String query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
+	public Double AccountBalance(Account account) {
+		String[] queryArgs = { account.GUID };
+		String query;
+		String commodityGUID = null;
+		boolean equity = false;
+		if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) 
+			equity = true;
+		if ( equity )
+			query = "select accounts.*,sum(CAST(quantity_num AS REAL)/quantity_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
+		else
+			query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
+			
 		Cursor cursor = sqliteHandle.rawQuery(query, queryArgs);
 		try {
 			Double retVal = 0.0;
@@ -278,13 +287,31 @@ public class GNCDataHandler {
 					int balIndex = cursor.getColumnIndex("bal");
 					if (!cursor.isNull(balIndex))
 						retVal = cursor.getDouble(balIndex);
+					int commodityGuidIndex = cursor.getColumnIndex("commodity_guid");
+					if (!cursor.isNull(commodityGuidIndex))
+						commodityGUID = cursor.getString(commodityGuidIndex);
 				}
 			}
-			return retVal;
+			if ( equity ) {
+				String priceQuery = "select CAST(value_num AS REAL)/value_denom as price from prices where commodity_guid=? order by date desc limit 1";
+				String[] priceQueryArgs = { commodityGUID };
+				Cursor priceCursor = sqliteHandle.rawQuery(priceQuery, priceQueryArgs);
+				Double price = 0.0;
+				if (priceCursor.moveToNext()) {
+					int priceIndex = priceCursor.getColumnIndex("price");
+					if (!priceCursor.isNull(priceIndex))
+						price = priceCursor.getDouble(priceIndex);
+				}
+				cursor.close();
+				return retVal*price;
+			}
+			else
+				return retVal;
 		}
 		finally {
 			cursor.close();
 		}
+		
 	}
 	
 	public Double getAccountBalanceWithChildren(String GUID) {
