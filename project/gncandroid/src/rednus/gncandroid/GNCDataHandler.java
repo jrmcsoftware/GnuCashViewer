@@ -505,10 +505,9 @@ public class GNCDataHandler {
 			int count = cursor.getCount();
 			int index = 0;
 			String[] accountGUIDs = new String[count];
-			if (cursor.moveToNext())
-				while (cursor.moveToNext())
-					accountGUIDs[index++] = cursor.getString(cursor
-							.getColumnIndex("guid"));
+			while (cursor.moveToNext())
+				accountGUIDs[index++] = cursor.getString(cursor
+						.getColumnIndex("guid"));
 			return accountGUIDs;
 		}
 		finally {
