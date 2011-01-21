@@ -286,6 +286,28 @@ public class GNCDataHandler {
 			cursor.close();
 		}
 	}
+	
+	public Double getAccountBalanceWithChildren(String GUID) {
+		Account account = GetAccount(GUID,true);
+		if ( account == null )
+			return new Double(0.0);
+		
+		if ( account.balanceWithChildren != null )  // Let not recalc if we don't need to
+			return account.balanceWithChildren;
+		
+		Double bal = new Double(account.balance);
+		LinkedHashMap<String, Account> subAccounts = this.GetSubAccounts(GUID);
+		if ( subAccounts != null ) {
+			for (String subGUID: subAccounts.keySet()) {
+				if ( !subGUID.equals(GUID) ) {
+					Double subBalance = getAccountBalanceWithChildren(subGUID);
+					bal += subBalance;
+				}
+			}
+		}
+		account.balanceWithChildren = bal;
+		return bal;
+	}
 
 	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
 		String query;
@@ -624,6 +646,7 @@ public class GNCDataHandler {
 		public Commodity currency;
 		// calculated balance amount
 		public Double balance;
+		public Double balanceWithChildren;
 		// transactions that belong to account
 		public List<String> trans = new ArrayList<String>();
 		public boolean hasChildren = false;

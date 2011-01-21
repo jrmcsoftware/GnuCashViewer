@@ -42,6 +42,7 @@ public class GNCAndroid extends Application implements
 	public GNCDataHandler gncDataHandler;
 	private String dataFile = null;
 	private boolean longAccountNames = false;
+	public boolean includeSubaccountInBalance = false;
 	private boolean reloadFile = true;
 
 	/**
@@ -107,6 +108,13 @@ public class GNCAndroid extends Application implements
 			gncDataHandler.GenAccountFilter(sp);
 			// Set to reload file
 			reloadFile = true;
+		} else if (key.equals(res.getString(R.string.pref_include_subaccount_in_balance))) {
+			// get new value
+			includeSubaccountInBalance = sp.getBoolean(res
+					.getString(R.string.pref_include_subaccount_in_balance), false);
+			Log.i(TAG, "New value " + String.valueOf(includeSubaccountInBalance));
+			// Set to reload file
+			reloadFile = true;
 		}
 	}
 
@@ -142,6 +150,9 @@ public class GNCAndroid extends Application implements
 		// read if we want long account names
 		longAccountNames = sp.getBoolean(res
 				.getString(R.string.pref_long_account_names), false);
+		
+		includeSubaccountInBalance = sp.getBoolean(res
+				.getString(R.string.pref_include_subaccount_in_balance), false);
 	}
 
 	/**

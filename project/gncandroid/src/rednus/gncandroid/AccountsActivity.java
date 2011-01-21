@@ -82,6 +82,8 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	private void getListData(String rootGUID) {
 		// get root account
 		listData = app.gncDataHandler.GetSubAccounts(rootGUID);
+		if ( app.includeSubaccountInBalance )
+			app.gncDataHandler.getAccountBalanceWithChildren(rootGUID);
 
 		currRootGUID = rootGUID;
 	}
@@ -182,10 +184,13 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			// set values for account line item
 			account = (Account) getItem(position);
 			item.txvAccName.setText(account.name);
+			
+			Double balance = app.includeSubaccountInBalance?account.balanceWithChildren:account.balance;
+			
 			item.txvBalance.setText(String.valueOf(NumberFormat
-					.getCurrencyInstance().format(account.balance)));
+					.getCurrencyInstance().format(balance)));
 			// set amount colour
-			if (account.balance < 0)
+			if (balance < 0)
 				item.txvBalance.setTextColor(app.res
 						.getColor(R.color.color_negetive));
 			else
