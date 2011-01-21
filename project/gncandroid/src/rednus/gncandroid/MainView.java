@@ -87,12 +87,6 @@ public class MainView extends TabActivity {
 	 * activities are initiated.
 	 */
 	private void showScreen() {
-		
-		if ( screensCreated )
-			return;
-		
-		screensCreated = true;
-		
 		Log.i(TAG, "Showing main screen...");
 		if (!app.gncDataHandler.dataValid) {
 			Log.i(TAG, "GNCDataHandler failed to initialise.. Forcing preferences...");
@@ -100,6 +94,11 @@ public class MainView extends TabActivity {
 					.getString(R.string.message_failed_to_read_data_file));
 			return;
 		}
+		if ( screensCreated )
+			return;
+
+		screensCreated = true;
+
 		// The activity TabHost
 		final TabHost tabHost = getTabHost();
 		// Reusable TabSpec for each tab
