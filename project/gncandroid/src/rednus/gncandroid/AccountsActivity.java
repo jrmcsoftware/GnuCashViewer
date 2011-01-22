@@ -51,6 +51,8 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	private Map<String, Account> listData = new TreeMap<String, Account>();
 	private DataCollection dc;
 	private SharedPreferences sp;
+	private int dataChangeCount = 0;
+	private AccountsListAdapter lstAdapter;
 
 	/*
 	 * When activity is started, and if Data file is already read, then display
@@ -71,10 +73,24 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		setContentView(R.layout.accounts);
 		// get list
 		ListView lv = (ListView) findViewById(R.id.accounts);
-		lv.setAdapter(new AccountsListAdapter(this));
+		lstAdapter = new AccountsListAdapter(this);
+		lv.setAdapter(lstAdapter);
 		lv.setOnItemClickListener(this);
 		Log.i(TAG, "Activity created.");
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		int cc =  app.gncDataHandler.getChangeCount();
+		if ( cc != dataChangeCount ) {
+			getListData(this.currRootGUID);
+			dataChangeCount = cc;
+			lstAdapter.notifyDataSetChanged();
+		}
+	}
+
 
 	/**
 	 * This method will get all the sub accounts of root and adds it to the list

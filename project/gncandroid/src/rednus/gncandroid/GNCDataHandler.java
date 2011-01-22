@@ -67,6 +67,7 @@ public class GNCDataHandler {
 	private TreeMap<String, String> accountTypeMapping;
 	private Resources res;
 	private String currencyGUID;
+	private int changeCount = 0;
 
 	/**
 	 * On create the handler create new DataCollection, create input stream for
@@ -179,6 +180,10 @@ public class GNCDataHandler {
 	public void close() {
 		if (sqliteHandle != null)
 			sqliteHandle.close();
+	}
+	
+	public int getChangeCount() {
+		return changeCount;
 	}
 	
 	public TreeMap<String, String> GetAccountTypeMapping() {
@@ -312,7 +317,7 @@ public class GNCDataHandler {
 		if ( account == null )
 			return new Double(0.0);
 		
-		if ( account.balanceWithChildren != null )  // Let not recalc if we don't need to
+		if ( account.balanceWithChildren != null )  // Lets not recalc if we don't need to
 			return account.balanceWithChildren;
 		
 		Double bal = new Double(account.balance);
@@ -327,6 +332,17 @@ public class GNCDataHandler {
 		}
 		account.balanceWithChildren = bal;
 		return bal;
+	}
+	
+	public void markAccountChanged(String GUID) {
+		Account account = GetAccount(GUID, false);
+		if ( account != null ) {
+			account.balance = null;
+			account.balanceWithChildren = null;
+			changeCount++;
+			if ( account.parentGUID != null && sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false)) 
+				markAccountChanged(account.parentGUID);
+		}
 	}
 
 	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
@@ -487,6 +503,9 @@ public class GNCDataHandler {
 			sqliteHandle.execSQL(splitsInsert, fromArgs);
 
 			sqliteHandle.setTransactionSuccessful();
+			
+			this.markAccountChanged(toGUID);
+			this.markAccountChanged(fromGUID);
 
 			return true;
 		} catch (Exception e) {
