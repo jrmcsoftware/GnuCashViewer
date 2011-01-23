@@ -142,10 +142,9 @@ public class GNCDataHandler {
 			}
 			cursor.close();
 
-			String where = accountFilter==""?"":" where "+accountFilter;
 			// cursor = sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and hidden=0 group by accounts.name",null);
 			// cursor = sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eq_bal from accounts left outer join splits on splits.account_guid=accounts.guid "+ where +" group by accounts.name",null);
-			cursor = sqliteHandle.rawQuery("select * from accounts", null);
+			cursor = sqliteHandle.rawQuery("select * from accounts where hidden=0", null);
 			while (cursor.moveToNext()) {
 				Account account = new Account();
 				// CREATE TABLE accounts (guid text(32) PRIMARY KEY NOT
