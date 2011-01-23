@@ -38,6 +38,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Debug;
 import android.util.Log;
 
 class InvalidDataException extends Exception {
@@ -65,6 +66,7 @@ public class GNCDataHandler {
 	private String accountFilter;
 	private TreeMap<String, String> accountPrefMapping;
 	private TreeMap<String, String> accountTypeMapping;
+	private TreeMap<String,Double>  commodityPrices;
 	private Resources res;
 	private String currencyGUID;
 	private int changeCount = 0;
@@ -81,6 +83,7 @@ public class GNCDataHandler {
 	public GNCDataHandler(GNCAndroid app) throws Exception {
 		Cursor cursor;
 		this.app = app;
+		
 		res = app.getResources();
 		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 
@@ -139,10 +142,9 @@ public class GNCDataHandler {
 			}
 			cursor.close();
 
-			// cursor =
-			// sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and hidden=0 group by accounts.name",null);
-			// cursor =
-			// sqliteHandle.rawQuery("select *,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts left outer join splits on splits.account_guid=accounts.guid group by accounts.name",null);
+			String where = accountFilter==""?"":" where "+accountFilter;
+			// cursor = sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and hidden=0 group by accounts.name",null);
+			// cursor = sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eq_bal from accounts left outer join splits on splits.account_guid=accounts.guid "+ where +" group by accounts.name",null);
 			cursor = sqliteHandle.rawQuery("select * from accounts", null);
 			while (cursor.moveToNext()) {
 				Account account = new Account();
@@ -162,6 +164,8 @@ public class GNCDataHandler {
 						.getColumnIndex("parent_guid"));
 				account.code = cursor.getString(cursor
 						.getColumnIndex("code"));
+				account.commodity_guid = cursor.getString(cursor
+						.getColumnIndex("commodity_guid"));
 				account.description = cursor.getString(cursor
 						.getColumnIndex("description"));
 				account.placeholder = cursor.getInt(cursor
@@ -175,6 +179,10 @@ public class GNCDataHandler {
 		}
 
 		gncData.completeCollection();
+		
+		// This appears to slow it down (I hoped it would speed it up)
+		//if ( sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false) )
+		//	loadAccountBalances();
 	}
 
 	public void close() {
@@ -241,7 +249,7 @@ public class GNCDataHandler {
 		StringBuffer filter = new StringBuffer();
 		if (!sp.getBoolean(res.getString(R.string.pref_show_hidden_account),
 				false))
-			filter.append(" and hidden=0 ");
+			filter.append(" hidden=0 ");
 
 		for (String key : accountPrefMapping.keySet())
 			if (!sp.getBoolean(key, true))
@@ -286,22 +294,9 @@ public class GNCDataHandler {
 				int balIndex = cursor.getColumnIndex("bal");
 				if (!cursor.isNull(balIndex))
 					retVal = cursor.getDouble(balIndex);
-				int commodityGuidIndex = cursor.getColumnIndex("commodity_guid");
-				if (!cursor.isNull(commodityGuidIndex))
-					commodityGUID = cursor.getString(commodityGuidIndex);
 			}
 			if ( equity ) {
-				String priceQuery = "select CAST(value_num AS REAL)/value_denom as price from prices where commodity_guid=? order by date desc limit 1";
-				String[] priceQueryArgs = { commodityGUID };
-				Cursor priceCursor = sqliteHandle.rawQuery(priceQuery, priceQueryArgs);
-				Double price = 0.0;
-				if (priceCursor.moveToNext()) {
-					int priceIndex = priceCursor.getColumnIndex("price");
-					if (!priceCursor.isNull(priceIndex))
-						price = priceCursor.getDouble(priceIndex);
-				}
-				cursor.close();
-				return retVal*price;
+				return retVal*getCommodityPrice(account.commodity_guid);
 			}
 			else
 				return retVal;
@@ -310,6 +305,47 @@ public class GNCDataHandler {
 			cursor.close();
 		}
 		
+	}
+	
+	private Double getCommodityPrice(String GUID) {
+		if ( commodityPrices == null )
+		{
+			commodityPrices = new TreeMap<String,Double>();
+			Cursor cursor = sqliteHandle.rawQuery("select commodity_guid,CAST(value_num AS REAL)/value_denom as price from prices group by commodity_guid order by date desc", null);
+			while ( cursor.moveToNext() ) {
+				String commodity_guid = cursor.getString(cursor.getColumnIndex("commodity_guid"));
+				Double price = cursor.getDouble(cursor.getColumnIndex("price"));
+				commodityPrices.put(commodity_guid, price);
+			}
+			cursor.close();
+		}
+		Double price = 0.0;
+		Double cp = commodityPrices.get(GUID);
+		if ( cp != null )
+			price = cp;
+		
+		return price;
+	}
+	
+	public void loadAccountBalances() {
+		Cursor cursor = sqliteHandle.rawQuery("select accounts.guid,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and "+ accountFilter +" group by accounts.name",null);
+		while ( cursor.moveToNext() ) {
+			String guid = cursor.getString(cursor.getColumnIndex("guid"));
+			Double bal = cursor.getDouble(cursor.getColumnIndex("bal"));
+			Account account = GetAccount(guid,false);
+			
+			if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) {
+				Double eqbal = cursor.getDouble(cursor.getColumnIndex("eqbal"));
+				if ( eqbal > 0.0 ) {
+					Double commodityPrice = getCommodityPrice(account.commodity_guid);
+					account.balance = eqbal*commodityPrice;
+				}
+				else
+					account.balance = 0.0;
+			} else {
+				account.balance = bal;
+			}
+		}
 	}
 	
 	public Double getAccountBalanceWithChildren(String GUID) {
@@ -391,11 +427,11 @@ public class GNCDataHandler {
 	}
 
 	public LinkedHashMap<String, Account> GetSubAccounts(String rootGUID) {
-		SharedPreferences sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 		String[] queryArgs = { rootGUID };
+		String filter = accountFilter==null||accountFilter==""?"":" and " + accountFilter;
 		Cursor cursor = sqliteHandle.rawQuery(
 				"select * from accounts where parent_guid=? "
-						+ accountFilter + " order by name", queryArgs);
+						+ filter + " order by name", queryArgs);
 		try {
 			LinkedHashMap<String, Account> listData = new LinkedHashMap<String, Account>();
 			Account rootAccount = this.GetAccount(rootGUID, true);
@@ -671,6 +707,7 @@ public class GNCDataHandler {
 		public String description;
 		public String code;
 		public boolean placeholder;
+		public String commodity_guid;
 		public Commodity currency;
 		// calculated balance amount
 		public Double balance;
