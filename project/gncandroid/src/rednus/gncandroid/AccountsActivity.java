@@ -18,6 +18,7 @@
  */
 package rednus.gncandroid;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
 import java.util.TreeMap;
@@ -216,8 +217,14 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			else
 				balance = account.balance;
 
-			item.txvBalance.setText(String.valueOf(NumberFormat
-					.getCurrencyInstance().format(balance)));
+			// Get a NumberFormat instance which will format a currency in the default Locale.
+			NumberFormat formatter = NumberFormat.getCurrencyInstance();
+			// Set the currency to the one specified in the account.
+			if (formatter instanceof DecimalFormat)
+				formatter.setCurrency(account.commodity.currency);
+			// Display the formatted balance.
+			item.txvBalance.setText(formatter.format(balance));
+
 			// set amount colour
 			if (balance < 0)
 				item.txvBalance.setTextColor(app.res

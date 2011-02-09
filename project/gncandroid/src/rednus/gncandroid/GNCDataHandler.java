@@ -146,7 +146,8 @@ public class GNCDataHandler {
 			}
 			cursor.close();
 
-			cursor = sqliteHandle.rawQuery("select * from accounts", null);
+			cursor = sqliteHandle.rawQuery("select accounts.guid as aguid,commodities.guid as cguid,* from accounts left outer join commodities on accounts.commodity_guid = commodities.guid", null);
+			Map<String, Commodity> currencies = new TreeMap<String, Commodity>(); // Map currency codes to Commodity objects.
 			while (cursor.moveToNext()) {
 				Account account = new Account();
 				// CREATE TABLE accounts (guid text(32) PRIMARY KEY NOT
@@ -156,7 +157,7 @@ public class GNCDataHandler {
 				// text(32), code text(2048), description text(2048), hidden
 				// integer, placeholder integer);
 				account.GUID = cursor.getString(cursor
-						.getColumnIndex("guid"));
+						.getColumnIndex("aguid"));
 				account.name = cursor.getString(cursor
 						.getColumnIndex("name"));
 				account.type = cursor.getString(cursor
@@ -165,8 +166,29 @@ public class GNCDataHandler {
 						.getColumnIndex("parent_guid"));
 				account.code = cursor.getString(cursor
 						.getColumnIndex("code"));
-				account.commodity_guid = cursor.getString(cursor
-						.getColumnIndex("commodity_guid"));
+				String mnemonic = cursor.getString(cursor
+                                                        .getColumnIndex("mnemonic"));
+				if (mnemonic == null)
+					// This is probably the root account.
+					account.commodity = null;
+				else {
+					account.commodity = currencies.get(mnemonic);
+					if (account.commodity == null) {
+						// This commodity hasn't been encountered yet. Create it.
+						account.commodity = new Commodity();
+						account.commodity.guid = cursor.getString(cursor
+								.getColumnIndex("cguid"));
+						account.commodity.space = cursor.getString(cursor
+								.getColumnIndex("namespace"));
+						account.commodity.quoteSource = cursor.getString(cursor
+								.getColumnIndex("quote_source"));
+						account.commodity.mnemonic = cursor.getString(cursor
+								.getColumnIndex("mnemonic"));
+						account.commodity.currency = Currency.getInstance(
+								account.commodity.mnemonic);
+						currencies.put(account.commodity.mnemonic, account.commodity);
+					}
+				}
 				account.description = cursor.getString(cursor
 						.getColumnIndex("description"));
 				account.placeholder = cursor.getInt(cursor
@@ -303,7 +325,7 @@ public class GNCDataHandler {
 					retVal = cursor.getDouble(balIndex);
 			}
 			if ( equity ) {
-				return retVal*getCommodityPrice(account.commodity_guid);
+				return retVal*getCommodityPrice(account.commodity.guid);
 			}
 			else
 				return retVal;
@@ -343,7 +365,7 @@ public class GNCDataHandler {
 			if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) {
 				Double eqbal = cursor.getDouble(cursor.getColumnIndex("eqbal"));
 				if ( eqbal > 0.0 ) {
-					Double commodityPrice = getCommodityPrice(account.commodity_guid);
+					Double commodityPrice = getCommodityPrice(account.commodity.guid);
 					account.balance = eqbal*commodityPrice;
 				}
 				else
@@ -721,9 +743,11 @@ public class GNCDataHandler {
 	}
 
 	public class Commodity {
+		public String guid;
 		public String space;
-		public String id;
 		public String quoteSource;
+		public String mnemonic;
+		public Currency currency;
 	}
 
 	public class Account {
@@ -737,8 +761,7 @@ public class GNCDataHandler {
 		public String description;
 		public String code;
 		public boolean placeholder;
-		public String commodity_guid;
-		public Commodity currency;
+		public Commodity commodity;
 		// calculated balance amount
 		public Double balance;
 		public Double balanceWithChildren;
