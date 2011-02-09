@@ -215,7 +215,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			// set amount colour
 			if (balance < 0)
 				item.txvBalance.setTextColor(app.res
-						.getColor(R.color.color_negetive));
+						.getColor(R.color.color_negative));
 			else
 				item.txvBalance.setTextColor(app.res
 						.getColor(R.color.color_positive));
