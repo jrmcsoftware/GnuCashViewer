@@ -39,12 +39,8 @@
 	<string name="alert_dialog_ok">Ok</string>
 	<string name="app_about_text">About GnuCash Companion for Android.</string>
 	<string name="label_transtype">Transaction Type:</string>
-	<string name="parser_type">Parser to be used</string>
-	<string name="summary_parser_type">Select a parser type to be used.</string>
-	<string name="dialog_title_parser_types">Select Parser Type</string>
 	<string name="error_prefs_not_set">Error in Preferences</string>
-	<string name="error_message_prefs_not_set">You should set both Data File location and Parser
-		Type.</string>
+	<string name="error_message_prefs_not_set">You must set the data file location.</string>
 	<string name="menu_book">Book Details</string>
 	<string name="data_file">Data File</string>
 	<string name="book_version">Book Version</string>
@@ -80,7 +76,7 @@
 
 	<string name="menu_options_pref">Options</string>
 	<string name="filterprefscreen">FilterPrefScreen</string>
-	<string name="acountfilter">Account Filter</string>
+	<string name="accountfilter">Account Filter</string>
 	<string name="filterbyaccounttype">Filter By Account Type</string>
 	<string name="other">Other</string>
 	<string name="pref_show_hidden_account">show_hidden_account</string>
@@ -119,6 +115,6 @@
 
 	<string name="pref_include_subaccount_in_balance">include_subaccount_in_balance</string>
 	<string name="include_subaccount_in_balance">SubAccounts in Balance</string>
-	<string name="include_subaccount_in_balance_summary">Include sub accounts in balance.  This will have performance impact.s</string>
+	<string name="include_subaccount_in_balance_summary">Include sub accounts in balance.  This will have performance impact.</string>
 
 </resources>

@@ -22,7 +22,7 @@
 			android:summary="@string/include_subaccount_in_balance_summary" />
 	<PreferenceScreen
 			 android:key="@string/filterprefscreen"
-	         android:title="@string/acountfilter">
+	         android:title="@string/accountfilter">
 		<PreferenceCategory
 				android:title="@string/filterbyaccounttype">
 

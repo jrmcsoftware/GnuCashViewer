@@ -76,8 +76,8 @@ public class GNCDataHandler {
 	private int changeCount = 0;
 
 	/**
-	 * On create the handler create new DataCollection, create input stream for
-	 * file and depending on the parser used the data will be parsed.
+	 * Create the handler and populate DataCollection with information from the
+	 * data file given in the preferences.
 	 * 
 	 * @param app
 	 *            GNCAndroid Application reference
