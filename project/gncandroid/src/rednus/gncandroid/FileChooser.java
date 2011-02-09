@@ -48,21 +48,15 @@ public class FileChooser extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		app = (GNCAndroid) getApplication();
-		// app.res.getString(R.string.pref_data_file_key);
 		Log.i(TAG, "Filechooser started");
 		// make this a dialogue
 		requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		setContentView(R.layout.filechooser);
 		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
 				android.R.drawable.stat_notify_sdcard);
-		// set data
-		// if // It would be nice to start from the directory of the previously
+		// TODO It would be nice to start from the directory of the previously
 		// selected data file (if not null)
 		this.initialize(app.res.getString(R.string.def_folder));
-		// else {
-		// this.initialize(new
-		// File(app.res.getString(R.string.pref_data_file_key)).getParentFile().getAbsolutePath());
-		// }
 	}
 
 	private void initialize(String path) {
@@ -87,7 +81,7 @@ public class FileChooser extends ListActivity {
 
 	private boolean getDirectory(String path) {
 		TextView tv = (TextView) findViewById(R.id.filelister_message);
-		// check to see if there's an sd card.
+		// check to see if there's an SD card.
 		String cardstatus = Environment.getExternalStorageState();
 		if (cardstatus.equals(Environment.MEDIA_REMOVED)
 				|| cardstatus.equals(Environment.MEDIA_UNMOUNTABLE)
@@ -108,6 +102,7 @@ public class FileChooser extends ListActivity {
 	private void getFiles(File f) {
 		if (f.isDirectory()) {
 			File[] childs = f.listFiles();
+			// listFile can return null if an error occurs!
 			if (null == childs)
 				return;
 			for (File child : childs) {
@@ -144,11 +139,6 @@ public class FileChooser extends ListActivity {
 			f = new File(mRoot + "/" + mFileList.get(position));
 		if (f.isDirectory()) {
 			this.refreshRoot(f);
-			/*
-			 * try { this.refreshRoot(f.getCanonicalFile()); } catch
-			 * (IOException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); }
-			 */
 			return;
 		}
 		Log.i(TAG, "File selected, returning result");

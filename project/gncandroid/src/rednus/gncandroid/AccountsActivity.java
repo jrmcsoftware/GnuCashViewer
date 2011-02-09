@@ -47,11 +47,17 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	private static final String TAG = "AccountsActivity";
 	// Application data
 	private GNCAndroid app;
+	// The GUID which roots the tree of accounts.
 	private String currRootGUID;
+	// Map of accounts which will form the list view.
 	private Map<String, Account> listData = new TreeMap<String, Account>();
+	// The parsed book.
 	private DataCollection dc;
+	// The app's shared preferences.
 	private SharedPreferences sp;
+	// A poor man's condition variable for notifying changes to the UI.
 	private int dataChangeCount = 0;
+	// The adapter which will form the view of this activity.
 	private AccountsListAdapter lstAdapter;
 
 	/*
@@ -66,7 +72,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		Log.i(TAG, "Creating activity...");
 		app = (GNCAndroid) getApplication();
 		sp = getSharedPreferences(GNCAndroid.SPN, MODE_PRIVATE);
-		// First get first object of data
+		// Get first object of data
 		dc = app.gncDataHandler.getGncData();
 		getListData(dc.book.rootAccountGUID);
 		// set view
@@ -83,6 +89,8 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	protected void onResume() {
 		super.onResume();
 
+		// Synchronise this view with the data. If they have changed,
+		// get the new data and tell the adapter to refresh.
 		int cc =  app.gncDataHandler.getChangeCount();
 		if ( cc != dataChangeCount ) {
 			getListData(this.currRootGUID);
@@ -107,7 +115,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		currRootGUID = rootGUID;
 	}
 
-	/*
+	/**
 	 * Event Handler for List item selection
 	 * 
 	 * @see
@@ -152,7 +160,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			mInflater = LayoutInflater.from(context);
 		}
 
-		/*
+		/**
 		 * Returns the total number of items to be displayed
 		 * 
 		 * @see android.widget.Adapter#getCount()
@@ -161,7 +169,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			return listData.size();
 		}
 
-		/*
+		/**
 		 * Returns the Item in specific position
 		 * 
 		 * @see android.widget.Adapter#getItem(int)
@@ -170,7 +178,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			return listData.get(listData.keySet().toArray()[i]);
 		}
 
-		/*
+		/**
 		 * Returns the id of the item in specific position. In this case its the
 		 * position itself.
 		 * 
@@ -180,7 +188,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			return i;
 		}
 
-		/*
+		/**
 		 * This method creates the list item for specific position passed. It
 		 * populates data from the list item at position.
 		 * 
@@ -224,11 +232,10 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 				item.btnExpand.setImageResource(R.drawable.list_expanded);
 			else if (account.hasChildren)
 				item.btnExpand.setImageResource(R.drawable.list_collapsed);
-			// return
 			return convertView;
 		}
 
-		/*
+		/**
 		 * When the data in list listData changed, it is necessary to redraw the
 		 * list view and fill it up with new data.
 		 * 
@@ -241,7 +248,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			super.notifyDataSetChanged();
 		}
 
-		/*
+		/**
 		 * This methods tells the view layout that all the items in the list are
 		 * not enabled by default.
 		 * 
@@ -252,7 +259,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			return false;
 		}
 
-		/*
+		/**
 		 * This method checks if the list item has children and then return true
 		 * to enable the list item as clickable.
 		 * 

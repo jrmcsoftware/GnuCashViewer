@@ -43,12 +43,12 @@ public class AccountSpinnerData {
 	/**
 	 * Instantiates a new account spinner data.
 	 *
-	 * @param app the app
-	 * @param values the initial account types
+	 * @param app The app
+	 * @param values The initial account types
 	 */
-	public AccountSpinnerData(GNCAndroid theApp, String values[]) {
-		app = theApp;
-		
+	public AccountSpinnerData(GNCAndroid app, String values[]) {
+		this.app = app;
+
 		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.GetAccountTypeMapping();
 		int size = accountTypeMapping.size();
 
@@ -69,10 +69,10 @@ public class AccountSpinnerData {
 	}
 
 	/**
-	 * Gets the account guid.
+	 * Gets the account GUID.
 	 *
-	 * @param pos the position of the requested guid
-	 * @return the account guid
+	 * @param pos The position of the requested account.
+	 * @return The account GUID
 	 */
 	public String getAccountGUID(int pos) {
 		return accountGUIDs[pos];
@@ -81,7 +81,7 @@ public class AccountSpinnerData {
 	/**
 	 * Gets the account names.
 	 *
-	 * @return the account names
+	 * @return The account names
 	 */
 	public String[] getAccountNames() {
 		return accountNames;
@@ -90,7 +90,7 @@ public class AccountSpinnerData {
 	/**
 	 * Gets the account type keys.
 	 *
-	 * @return the account type keys
+	 * @return The account type keys
 	 */
 	public CharSequence[] getAccountTypeKeys() {
 		return accountTypeKeys;
@@ -107,9 +107,9 @@ public class AccountSpinnerData {
 	}
 
 	/**
-	 * Gets the account guids.
+	 * Gets the account GUIDs.
 	 *
-	 * @return the account guids
+	 * @return The account GUIDs
 	 */
 	public String[] getAccountGUIDs() {
 		return accountGUIDs;
@@ -118,7 +118,7 @@ public class AccountSpinnerData {
 	/**
 	 * Construct account lists.
 	 *
-	 * @param filter the account type filter
+	 * @param filter The account type filter
 	 */
 	private void constructAccountLists(String[] filter) {
 		TreeMap<String, String> accounts = app.gncDataHandler
@@ -130,14 +130,13 @@ public class AccountSpinnerData {
 		accountNames = new String[accounts.size()];
 		accountGUIDs = new String[accounts.size()];
 		accounts.keySet().toArray(accountNames);
-		for (int i = 0; i < accounts.size(); i++)
-			accountGUIDs[i] = accounts.get(accountNames[i]);
+		accounts.values().toArray(accountGUIDs);
 	}
 
 	/**
 	 * Sets the bitmap from account list.
 	 *
-	 * @param values the list of accounts that should be set to true on the account bitmap
+	 * @param values The list of accounts that should be set to true on the account bitmap.
 	 */
 	private void setBitmapFromAccountList(String values[]) {
 		for (int i = 0; i < accountTypeValues.length; i++) {
@@ -152,7 +151,7 @@ public class AccountSpinnerData {
 	/**
 	 * Gets the account list from bitmap.
 	 *
-	 * @return the account list from bitmap
+	 * @return The account list from bitmap.
 	 */
 	private String[] getAccountListFromBitmap() {
 		ArrayList<String> l = new ArrayList<String>();

@@ -60,15 +60,19 @@ class InvalidDataException extends Exception {
 public class GNCDataHandler {
 	private static final String TAG = "GNCDataHandler"; // TAG for this activity
 	private GNCAndroid app; // Application
-	private DataCollection gncData = new DataCollection(); // Data Collection
+	private DataCollection gncData = new DataCollection(); // The parsed book.
 	private SQLiteDatabase sqliteHandle;
 	private SharedPreferences sp;
+	// A SQL snippet to be used in the WHERE clause to select only the chosen accounts.
 	private String accountFilter;
+	// Two maps from preference keys to database "enums".
 	private TreeMap<String, String> accountPrefMapping;
 	private TreeMap<String, String> accountTypeMapping;
 	private TreeMap<String,Double>  commodityPrices;
 	private Resources res;
+	// The GUID of the chosen currency. This is a property of the data.
 	private String currencyGUID;
+	// A poor man's condition variable, used to allow AccountsActivity to detect data changes.
 	private int changeCount = 0;
 
 	/**
@@ -142,9 +146,7 @@ public class GNCDataHandler {
 			}
 			cursor.close();
 
-			// cursor = sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and hidden=0 group by accounts.name",null);
-			// cursor = sqliteHandle.rawQuery("select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eq_bal from accounts left outer join splits on splits.account_guid=accounts.guid "+ where +" group by accounts.name",null);
-			cursor = sqliteHandle.rawQuery("select * from accounts where hidden=0", null);
+			cursor = sqliteHandle.rawQuery("select * from accounts", null);
 			while (cursor.moveToNext()) {
 				Account account = new Account();
 				// CREATE TABLE accounts (guid text(32) PRIMARY KEY NOT
@@ -274,6 +276,12 @@ public class GNCDataHandler {
 				getBalance);
 	}
 
+	/** Find the balance of the given Account. If the account is a STOCK or
+	 * MUTUAL account, get the value of the Account on the date given by the
+	 * most recent price.
+	 *
+	 * @return The account balance.
+	 */
 	public Double AccountBalance(Account account) {
 		String[] queryArgs = { account.GUID };
 		String query;
@@ -346,6 +354,11 @@ public class GNCDataHandler {
 		}
 	}
 	
+	/** Like GetAccountBalance, but recurse into the accounts which have this
+	 * one as their parent or grandparent etc.
+	 *
+	 * @return the total balance.
+	 */
 	public Double getAccountBalanceWithChildren(String GUID) {
 		Account account = GetAccount(GUID,true);
 		if ( account == null )
@@ -368,6 +381,11 @@ public class GNCDataHandler {
 		return bal;
 	}
 
+	/** Indicate that the balance of this account (and its parents, if the user
+	 * has chosen to include subaccounts in balances) should be recalculated.
+	 *
+	 * @param GUID The GUID of the Account which has changed.
+	 */
 	public void markAccountChanged(String GUID) {
 		Account account = GetAccount(GUID, false);
 		if ( account != null ) {
@@ -379,6 +397,11 @@ public class GNCDataHandler {
 		}
 	}
 
+	/** The list of accounts whose type are one of those given.
+	 *
+	 * @param String[] The list of requested account types.
+	 * @return A Map of the account names to GUIDs.
+	 */
 	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
 		String query;
 		String types;
@@ -453,6 +476,7 @@ public class GNCDataHandler {
 		}
 	}
 
+	/** Return a list of the descriptions of recent transactions. */
 	public String[] GetTransactionDescriptions() {
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);
@@ -484,6 +508,17 @@ public class GNCDataHandler {
 		return GUID;
 	}
 
+	/** Create a new financial transaction in the database. The SQL transaction
+	 * is protected by a transaction, which will be rolled back if an error
+	 * occurs.
+	 *
+	 * @param toGUID The GUID of the payee of the transaction.
+	 * @param fromGUID The GUID of the payer of the transaction.
+	 * @param description The transaction description.
+	 * @param amount The value of the transaction, as a String.
+	 * @param date The date of the transaction, as a String.
+	 * @return False if something went wrong.
+	 */
 	public boolean insertTransaction(String toGUID, String fromGUID,
 			String description, String amount, String date) {
 
@@ -520,10 +555,12 @@ public class GNCDataHandler {
 					"", postDate, enterDate, description };
 			sqliteHandle.execSQL(transInsert, transArgs);
 
+			// Make a fraction. TODO "demom" should be read from the DB.
 			double d = Double.parseDouble(amount);
 			int demom = 100;
 			int value = (int) (d * demom);
 
+			// Second, the two splits.
 			Object[] toArgs = { GenGUID(), tx_guid, toGUID, "", "", "n", value,
 					100, value, 100 };
 			sqliteHandle.execSQL(splitsInsert, toArgs);

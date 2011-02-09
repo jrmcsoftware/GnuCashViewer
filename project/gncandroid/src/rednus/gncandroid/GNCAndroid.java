@@ -75,8 +75,8 @@ public class GNCAndroid extends Application implements
 	}
 
 	/**
-	 * This method listens changes to preferences. And if any of the value is is
-	 * changed, it should let application know that the data file should be read
+	 * This method listens for changes to preferences. If any of the value is
+	 * changed, let application know that the data file should be read
 	 * again.
 	 * 
 	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#
@@ -90,12 +90,16 @@ public class GNCAndroid extends Application implements
 	}
 
 	/**
-	 * Creates new gncDataHandler with values from preferences
+	 * Creates new gncDataHandler with values from preferences.
+	 *
+	 * @return False if something went wrong, in which case the old GNCDataHandler
+	 *         has been destroyed.
 	 */
 	public boolean readData() {
 		if (sp.getString(res.getString(R.string.pref_data_file_key), null) == null)
 			return false;
 		Log.i(TAG, "Reading Data from " + sp.getString(res.getString(R.string.pref_data_file_key), null) + "...");
+		// Finalise the previous data handler if we had one.
 		if (gncDataHandler != null)
 			gncDataHandler.close();
 		try {
@@ -103,6 +107,10 @@ public class GNCAndroid extends Application implements
 			reloadFile = false;
 		}
 		catch (Exception e) {
+			// GNCDataHandler can fail to initialise if the data
+			// file doesn't exist or is in some way invalid.
+			// Log a basic error, clear any old GNDDataHandler
+			// and report failure.
 			Log.v(TAG, e.toString());
 			gncDataHandler = null;
 			return false;

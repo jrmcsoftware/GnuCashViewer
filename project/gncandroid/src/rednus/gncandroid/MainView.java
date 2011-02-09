@@ -42,7 +42,7 @@ public class MainView extends TabActivity {
 	private ProgressDialog pd; // progress bar
 	private boolean screensCreated = false;
 
-	/*
+	/**
 	 * Start of activity. Check if data file can be read, if not show dialog and
 	 * navigate to preferences. Also add sub activities as tabs to self.
 	 * 
@@ -127,7 +127,7 @@ public class MainView extends TabActivity {
 		Log.i(TAG, "Showing main screen...Done");
 	}
 
-	/*
+	/**
 	 * When menu is selected on this app, show options.
 	 * 
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
@@ -139,8 +139,8 @@ public class MainView extends TabActivity {
 		return true;
 	}
 
-	/*
-	 * When any menu item is selected, perform specific action
+	/**
+	 * When any menu item is selected, perform specific action.
 	 * 
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 */
@@ -171,9 +171,9 @@ public class MainView extends TabActivity {
 		}
 	}
 
-	/*
+	/**
 	 * When the view is restarted when returned from preferences screen, check
-	 * if the reload file flag is set and read data again if it does
+	 * if the reload file flag is set and read data again if it does.
 	 * 
 	 * @see android.app.Activity#onRestart()
 	 */
@@ -188,15 +188,15 @@ public class MainView extends TabActivity {
 	}
 
 	/**
-	 * This class implements AsynTask and reads the data file in a new thread so
+	 * This class implements AsyncTask and reads the data file in a new thread so
 	 * that the Time Out trigger does not happen.
 	 * 
 	 * @author John Gray
 	 * 
 	 */
 	private class ReadDataTask extends AsyncTask<Void, Void, Boolean> {
-		/*
-		 * Show progress dialog before execution
+		/**
+		 * Show progress dialog before execution.
 		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
@@ -210,8 +210,8 @@ public class MainView extends TabActivity {
 				pd.show();
 		}
 
-		/*
-		 * Call method readData of GNCAndroid in background task
+		/**
+		 * Call method readData of GNCAndroid in background task.
 		 * 
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 */
@@ -220,8 +220,8 @@ public class MainView extends TabActivity {
 			return app.readData();
 		}
 
-		/*
-		 * Close progress dialog after execution
+		/**
+		 * Close progress dialog after execution.
 		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */

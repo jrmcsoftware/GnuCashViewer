@@ -28,7 +28,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 /**
- * This class displays opened Book details
+ * This class displays opened Book details.
  * 
  * @author avvari.shyam
  * 
@@ -38,7 +38,7 @@ public class BookDetailsActivity extends Activity {
 	private GNCAndroid app;
 	private SharedPreferences sp;
 
-	/*
+	/**
 	 * When activity is started, and if Data file is already read, then display
 	 * account information tree.
 	 * 

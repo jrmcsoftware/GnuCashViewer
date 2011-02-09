@@ -40,7 +40,7 @@ public class Preferences extends PreferenceActivity {
 	private GNCAndroid app;
 	private String pref_data_file_key;
 
-	/*
+	/**
 	 * On create shows preferences from XML. Sets listener to file chooser as
 	 * self and starts file chooser activity when clicked. Also shows, about,
 	 * help and version dialogs.
@@ -113,12 +113,13 @@ public class Preferences extends PreferenceActivity {
 				return true;
 			}
 		});
+		// If the filename is already set, make it the summary. Else leave a helpful message.
 		dataFilePref.setSummary(dataFilePref.getSharedPreferences().getString(app.res.getString(R.string.pref_data_file_key), "No data file selected."));
 		Log.i(TAG, "Showing Preferences screen..Done");
 	}
 
-	/*
-	 * Gets return from FileChooser activity for selected file name
+	/**
+	 * Gets return from FileChooser activity for selected file name.
 	 * 
 	 * @see android.preference.PreferenceActivity#onActivityResult(int, int,
 	 * android.content.Intent)
@@ -137,7 +138,7 @@ public class Preferences extends PreferenceActivity {
 			super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	/*
+	/**
 	 * This method is triggered when back button is pressed. So, if the user
 	 * does not set all required parameters and tries to return to application,
 	 * error message should be displayed and navigation should be cancelled.
