@@ -49,6 +49,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	// Application data
 	private GNCAndroid app;
 	// The GUID which roots the tree of accounts.
+	// ** NOTE: This GUID is the root of the accounts in this view, _not_ the gnucash "Root" account. **
 	private String currRootGUID;
 	// Map of accounts which will form the list view.
 	private Map<String, Account> listData = new TreeMap<String, Account>();
