@@ -25,7 +25,7 @@
 	         android:title="@string/acountfilter">
 		<PreferenceCategory
 				android:title="@string/filterbyaccounttype">
-	
+
 			<CheckBoxPreference
 				android:key="@string/pref_account_type_bank"
 				android:title="@string/account_type_bank" android:defaultValue="true"/>

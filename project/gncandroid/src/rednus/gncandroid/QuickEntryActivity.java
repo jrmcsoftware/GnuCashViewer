@@ -84,7 +84,7 @@ public class QuickEntryActivity extends Activity {
 		app = (GNCAndroid) getApplication();
 		Log.i(TAG, "Activity created");
 		setContentView(R.layout.quickentry);
-		
+
 		Button saveButton = (Button) findViewById(R.id.ButtonSave);
 		Button clearButton = (Button) findViewById(R.id.ButtonClear);
 
@@ -92,16 +92,14 @@ public class QuickEntryActivity extends Activity {
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				QuickEntryActivity.this, R.array.transtype_array,
 				android.R.layout.simple_spinner_item);
-		adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		transtypeSpinner.setAdapter(adapter);
 
-		transtypeSpinner
-				.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
+		transtypeSpinner.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
 
 		String[] toAccountFilter = {"EXPENSE"};
 		toAccountData = new AccountSpinnerData(app, toAccountFilter);
-		
+
 		String[] fromAccountFilter = {"CREDIT", "BANK"};
 		fromAccountData = new AccountSpinnerData(app, fromAccountFilter);
 
@@ -159,19 +157,19 @@ public class QuickEntryActivity extends Activity {
 	private void setToFromAdapter(Spinner spinner, String[] values) {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, values);
-		
+
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		
+
 		spinner.setAdapter(adapter);
 	}
-	
+
 	private void setupTransferControls() {
 		mDescription = (AutoCompleteTextView) findViewById(R.id.EditTextDescriptoin);
 		mTo = (Spinner) findViewById(R.id.spinner_to);
 		mFrom = (Spinner) findViewById(R.id.spinner_from);
 		mAmount = (EditText) findViewById(R.id.amount);
 		dateButton = (Button) findViewById(R.id.ButtonDate);
-		
+
 		Button toFilterButton = (Button) findViewById(R.id.to_filter_button);
 		Button fromFilterButton = (Button) findViewById(R.id.from_filter_button);
 
@@ -182,8 +180,7 @@ public class QuickEntryActivity extends Activity {
 		ArrayAdapter<String> descAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, descs);
 		mDescription.setAdapter(descAdapter);
-		mDescription
-				.setOnItemClickListener(new DescriptionOnItemClickListener());
+		mDescription.setOnItemClickListener(new DescriptionOnItemClickListener());
 
 		// get the current date
 		final Calendar c = Calendar.getInstance();
@@ -198,53 +195,44 @@ public class QuickEntryActivity extends Activity {
 				showDialog(DATE_DIALOG_ID);
 			}
 		});
-		
+
 		toFilterButton.setOnClickListener(new View.OnClickListener() {
-			
 			public void onClick(View v) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
 				builder.setTitle("Select Account Types");
 				builder.setMultiChoiceItems(toAccountData.getAccountTypeKeys(), toAccountData.accountTypes, new DialogInterface.OnMultiChoiceClickListener() {
-					
 					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 						toAccountData.accountTypes[which] = isChecked;
 					}
 				});
 				AlertDialog alert = builder.create();
 				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
-					
 					public void onDismiss(DialogInterface arg0) {
 						setToFromAdapter(mTo, toAccountData.getUpdateAccountNames());
 					}
-					
 				});
 				alert.show();
 			}
 		});
 
 		fromFilterButton.setOnClickListener(new View.OnClickListener() {
-			
 			public void onClick(View v) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
 				builder.setTitle("Select Account Types");
 				builder.setMultiChoiceItems(fromAccountData.getAccountTypeKeys(), fromAccountData.accountTypes, new DialogInterface.OnMultiChoiceClickListener() {
-					
 					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 						fromAccountData.accountTypes[which] = isChecked;
 					}
 				});
 				AlertDialog alert = builder.create();
 				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
-					
 					public void onDismiss(DialogInterface arg0) {
 						setToFromAdapter(mFrom, fromAccountData.getUpdateAccountNames());
 					}
-					
 				});
 				alert.show();
 			}
 		});
-
 	}
 
 	@Override
@@ -280,7 +268,6 @@ public class QuickEntryActivity extends Activity {
 
 		public void onItemSelected(AdapterView<?> parent, View view, int pos,
 				long id) {
-
 			if (currentView != pos) {
 				currentView = pos;
 
@@ -313,15 +300,12 @@ public class QuickEntryActivity extends Activity {
 						.createFromResource(QuickEntryActivity.this,
 								R.array.transtype_array,
 								android.R.layout.simple_spinner_item);
-				adapter
-						.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				transtypeSpinner.setAdapter(adapter);
 				transtypeSpinner.setSelection(pos);
 
-				transtypeSpinner
-						.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
+				transtypeSpinner.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
 			}
-
 		}
 
 		public void onNothingSelected(AdapterView<?> parent) {

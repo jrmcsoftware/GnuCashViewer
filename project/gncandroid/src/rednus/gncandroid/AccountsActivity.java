@@ -78,11 +78,11 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		lv.setOnItemClickListener(this);
 		Log.i(TAG, "Activity created.");
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		int cc =  app.gncDataHandler.getChangeCount();
 		if ( cc != dataChangeCount ) {
 			getListData(this.currRootGUID);
@@ -203,13 +203,13 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			// set values for account line item
 			account = (Account) getItem(position);
 			item.txvAccName.setText(account.name);
-			
+
 			Double balance;
 			if (sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false))
 				balance = account.balanceWithChildren;
 			else
 				balance = account.balance;
-			
+
 			item.txvBalance.setText(String.valueOf(NumberFormat
 					.getCurrencyInstance().format(balance)));
 			// set amount colour

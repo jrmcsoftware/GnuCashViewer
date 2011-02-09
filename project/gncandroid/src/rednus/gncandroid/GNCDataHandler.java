@@ -188,11 +188,11 @@ public class GNCDataHandler {
 		if (sqliteHandle != null)
 			sqliteHandle.close();
 	}
-	
+
 	public int getChangeCount() {
 		return changeCount;
 	}
-	
+
 	public TreeMap<String, String> GetAccountTypeMapping() {
 		return accountTypeMapping;
 	}
@@ -200,46 +200,46 @@ public class GNCDataHandler {
 	public void BuildAccountMapping() {
 		accountPrefMapping = new TreeMap<String, String>();
 		accountTypeMapping = new TreeMap<String, String>();
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_asset), "ASSET");
 		accountTypeMapping.put(res.getString(R.string.account_type_asset), "ASSET");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_bank), "BANK");
 		accountTypeMapping.put(res.getString(R.string.account_type_bank), "BANK");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_cc), "CREDIT");
 		accountTypeMapping.put(res.getString(R.string.account_type_cc), "CREDIT");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_expense), "EXPENSE");
 		accountTypeMapping.put(res.getString(R.string.account_type_expense), "EXPENSE");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_equity), "EQUITY");
 		accountTypeMapping.put(res.getString(R.string.account_type_equity), "EQUITY");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_income), "INCOME");
 		accountTypeMapping.put(res.getString(R.string.account_type_income), "INCOME");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_liability), "LIABILITY");
 		accountTypeMapping.put(res.getString(R.string.account_type_liability), "LIABILITY");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_mutual_fund), "MUTUAL");
 		accountTypeMapping.put(res.getString(R.string.account_type_mutual_fund), "MUTUAL");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_stock),"STOCK");
 		accountTypeMapping.put(res.getString(R.string.account_type_stock),"STOCK");
 
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_cash),"CASH");
 		accountTypeMapping.put(res.getString(R.string.account_type_cash),"CASH");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_currency),"CURRENCY");
 		accountTypeMapping.put(res.getString(R.string.account_type_currency),"CURRENCY");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_receivable),"RECEIVABLE");
 		accountTypeMapping.put(res.getString(R.string.account_type_a_receivable),"RECEIVABLE");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_a_payable),"PAYABLE");
 		accountTypeMapping.put(res.getString(R.string.account_type_a_payable),"PAYABLE");
-		
+
 		accountPrefMapping.put(res.getString(R.string.pref_account_type_trading),"TRADING");
 		accountTypeMapping.put(res.getString(R.string.account_type_trading),"TRADING");
 	}
@@ -279,13 +279,13 @@ public class GNCDataHandler {
 		String query;
 		String commodityGUID = null;
 		boolean equity = false;
-		if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) 
+		if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") )
 			equity = true;
 		if ( equity )
 			query = "select accounts.*,sum(CAST(quantity_num AS REAL)/quantity_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
 		else
 			query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
-			
+
 		Cursor cursor = sqliteHandle.rawQuery(query, queryArgs);
 		try {
 			Double retVal = 0.0;
@@ -303,7 +303,6 @@ public class GNCDataHandler {
 		finally {
 			cursor.close();
 		}
-		
 	}
 	
 	private Double getCommodityPrice(String GUID) {
@@ -351,10 +350,10 @@ public class GNCDataHandler {
 		Account account = GetAccount(GUID,true);
 		if ( account == null )
 			return new Double(0.0);
-		
+
 		if ( account.balanceWithChildren != null )  // Lets not recalc if we don't need to
 			return account.balanceWithChildren;
-		
+
 		Double bal = new Double(account.balance);
 		LinkedHashMap<String, Account> subAccounts = this.GetSubAccounts(GUID);
 		if ( subAccounts != null ) {
@@ -368,14 +367,14 @@ public class GNCDataHandler {
 		account.balanceWithChildren = bal;
 		return bal;
 	}
-	
+
 	public void markAccountChanged(String GUID) {
 		Account account = GetAccount(GUID, false);
 		if ( account != null ) {
 			account.balance = null;
 			account.balanceWithChildren = null;
 			changeCount++;
-			if ( account.parentGUID != null && sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false)) 
+			if ( account.parentGUID != null && sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false))
 				markAccountChanged(account.parentGUID);
 		}
 	}
@@ -383,7 +382,7 @@ public class GNCDataHandler {
 	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
 		String query;
 		String types;
-		
+
 		StringBuffer tb = new StringBuffer();
 		Boolean first = true;
 		for (String at: accountTypes) {
@@ -393,8 +392,7 @@ public class GNCDataHandler {
 			first = false;
 		}
 		types = tb.toString();
-		
-		
+
 		query = "select guid, name from accounts where account_type in ("
 				+ types + ") and hidden=0 and non_std_scu=0 order by name";
 
@@ -422,7 +420,6 @@ public class GNCDataHandler {
 		finally {
 			cursor.close();
 		}
-
 	}
 
 	public LinkedHashMap<String, Account> GetSubAccounts(String rootGUID) {
@@ -436,7 +433,7 @@ public class GNCDataHandler {
 			Account rootAccount = this.GetAccount(rootGUID, true);
 			if ( rootAccount == null ) // this should never happen
 				return null;
-			
+
 			if (!rootAccount.name.contains("Root"))
 				listData.put(rootGUID, rootAccount);
 			while (cursor.moveToNext()) {
@@ -449,7 +446,6 @@ public class GNCDataHandler {
 						|| sp.getBoolean(res.getString(R.string.pref_show_zero_total_accounts), false))
 					listData.put(account.GUID, account);
 			}
-
 			return listData;
 		}
 		finally {
@@ -506,7 +502,6 @@ public class GNCDataHandler {
 
 			DateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
 			Date enter = simpleFormat.parse(date);
-
 			String enterDate = formatter.format(enter);
 
 			// We need to insert 3 records (a transaction and two splits)
@@ -538,7 +533,7 @@ public class GNCDataHandler {
 			sqliteHandle.execSQL(splitsInsert, fromArgs);
 
 			sqliteHandle.setTransactionSuccessful();
-			
+
 			this.markAccountChanged(toGUID);
 			this.markAccountChanged(fromGUID);
 
@@ -612,7 +607,6 @@ public class GNCDataHandler {
 		private void updateFullNames() {
 			for (Account account : accounts.values())
 				account.fullName = getFullName(account);
-
 		}
 
 		/**

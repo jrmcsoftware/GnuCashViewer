@@ -32,7 +32,7 @@ public class AccountSpinnerData {
 	// Two parallel arrays of matching account names and GUIDs
 	private String[] accountNames;
 	private String[] accountGUIDs;
-	
+
 	// Support for the account type filters on the to/from spinners
 	// These 3 arrays are used as set
 	private CharSequence[] accountTypeKeys;		// The user friendly account type names
@@ -51,24 +51,23 @@ public class AccountSpinnerData {
 		
 		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.GetAccountTypeMapping();
 		int size = accountTypeMapping.size();
-		
+
 		accountTypeKeys = new CharSequence[size];
 		accountTypeValues = new String[size];
 		accountTypes = new boolean[size];
 
-		int i=0;
+		int i = 0;
 		for (String key: accountTypeMapping.keySet()) {
 			accountTypeKeys[i] = key;
 			accountTypeValues[i] = accountTypeMapping.get(key);
 			accountTypes[i] = false;
 			i++;
 		}
-		
-		
+
 		setBitmapFromAccountList(values);
 		constructAccountLists(getAccountListFromBitmap());
 	}
-	
+
 	/**
 	 * Gets the account guid.
 	 *
@@ -78,7 +77,7 @@ public class AccountSpinnerData {
 	public String getAccountGUID(int pos) {
 		return accountGUIDs[pos];
 	}
-	
+
 	/**
 	 * Gets the account names.
 	 *
@@ -87,7 +86,7 @@ public class AccountSpinnerData {
 	public String[] getAccountNames() {
 		return accountNames;
 	}
-	
+
 	/**
 	 * Gets the account type keys.
 	 *
@@ -96,7 +95,7 @@ public class AccountSpinnerData {
 	public CharSequence[] getAccountTypeKeys() {
 		return accountTypeKeys;
 	}
-	
+
 	/**
 	 * Gets the update account names.
 	 *
@@ -106,7 +105,7 @@ public class AccountSpinnerData {
 		constructAccountLists(getAccountListFromBitmap());
 		return accountNames;
 	}
-	
+
 	/**
 	 * Gets the account guids.
 	 *
@@ -115,7 +114,7 @@ public class AccountSpinnerData {
 	public String[] getAccountGUIDs() {
 		return accountGUIDs;
 	}
-	
+
 	/**
 	 * Construct account lists.
 	 *
@@ -124,10 +123,10 @@ public class AccountSpinnerData {
 	private void constructAccountLists(String[] filter) {
 		TreeMap<String, String> accounts = app.gncDataHandler
 				.GetAccountList(filter);
-		
+
 		if ( accounts == null )
 			return;
-		
+
 		accountNames = new String[accounts.size()];
 		accountGUIDs = new String[accounts.size()];
 		accounts.keySet().toArray(accountNames);
@@ -141,15 +140,15 @@ public class AccountSpinnerData {
 	 * @param values the list of accounts that should be set to true on the account bitmap
 	 */
 	private void setBitmapFromAccountList(String values[]) {
-		for(int i=0;i<accountTypeValues.length;i++) {
+		for (int i = 0; i < accountTypeValues.length; i++) {
 			for (String v: values)
 				if ( accountTypeValues[i].equals(v)) {
 					accountTypes[i] = true;
 					break;
 				}
-		}		
+		}
 	}
-	
+
 	/**
 	 * Gets the account list from bitmap.
 	 *
@@ -157,11 +156,11 @@ public class AccountSpinnerData {
 	 */
 	private String[] getAccountListFromBitmap() {
 		ArrayList<String> l = new ArrayList<String>();
-		
-		for (int i=0;i<accountTypes.length;i++)
+
+		for (int i = 0; i < accountTypes.length; i++)
 			if (accountTypes[i] )
 				l.add(accountTypeValues[i]);
-		
+
 		String[] ret = new String[l.size()];
 		return l.toArray(ret);
 	}
