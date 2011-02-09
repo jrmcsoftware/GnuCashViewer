@@ -113,7 +113,7 @@ public class GNCDataHandler {
 				if (cursor.getCount() > 1) {
 					// If there are more than one, prefer the one given in the default Locale.
 					do {
-						String mnemonic = cursor.getString(cursor.getColumnIndex("mnenomic"));
+						String mnemonic = cursor.getString(cursor.getColumnIndex("mnemonic"));
 						if (mnemonic == ccode)
 							currencyGUID = cursor.getString(cursor.getColumnIndex("guid"));
 					} while (cursor.moveToNext());
