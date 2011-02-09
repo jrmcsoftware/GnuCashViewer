@@ -39,6 +39,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Debug;
+import android.os.SystemClock;
 import android.util.Log;
 
 class InvalidDataException extends Exception {
@@ -73,7 +74,7 @@ public class GNCDataHandler {
 	// The GUID of the chosen currency. This is a property of the data.
 	private String currencyGUID;
 	// A poor man's condition variable, used to allow AccountsActivity to detect data changes.
-	private int changeCount = 0;
+	private long changeCount;
 
 	/**
 	 * Create the handler and populate DataCollection with information from the
@@ -90,6 +91,7 @@ public class GNCDataHandler {
 		
 		res = app.getResources();
 		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
+		changeCount = SystemClock.uptimeMillis();
 
 		BuildAccountMapping();
 		GenAccountFilter();
@@ -213,7 +215,7 @@ public class GNCDataHandler {
 			sqliteHandle.close();
 	}
 
-	public int getChangeCount() {
+	public long getChangeCount() {
 		return changeCount;
 	}
 

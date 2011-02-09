@@ -57,7 +57,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	// The app's shared preferences.
 	private SharedPreferences sp;
 	// A poor man's condition variable for notifying changes to the UI.
-	private int dataChangeCount = 0;
+	private long dataChangeCount;
 	// The adapter which will form the view of this activity.
 	private AccountsListAdapter lstAdapter;
 
@@ -75,6 +75,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		sp = getSharedPreferences(GNCAndroid.SPN, MODE_PRIVATE);
 		// Get first object of data
 		dc = app.gncDataHandler.getGncData();
+		dataChangeCount = app.gncDataHandler.getChangeCount();
 		getListData(dc.book.rootAccountGUID);
 		// set view
 		setContentView(R.layout.accounts);
@@ -89,13 +90,22 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		onWindowFocusChanged(true);
+	}
 
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		// onResume is too early (the "Loading..." screen still shows), so update the data when we get focus.
+		if (!hasFocus)
+			return;
 		// Synchronise this view with the data. If they have changed,
 		// get the new data and tell the adapter to refresh.
-		int cc =  app.gncDataHandler.getChangeCount();
+		long cc = app.gncDataHandler.getChangeCount();
 		if ( cc != dataChangeCount ) {
-			getListData(this.currRootGUID);
+			Log.i(TAG, "onResume: data changed...");
+			dc = app.gncDataHandler.getGncData();
 			dataChangeCount = cc;
+			getListData(dc.book.rootAccountGUID);
 			lstAdapter.notifyDataSetChanged();
 		}
 	}
