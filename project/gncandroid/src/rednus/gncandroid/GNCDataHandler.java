@@ -88,7 +88,7 @@ public class GNCDataHandler {
 	public GNCDataHandler(GNCAndroid app) throws Exception {
 		Cursor cursor;
 		this.app = app;
-		
+
 		res = app.getResources();
 		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 		changeCount = SystemClock.uptimeMillis();
@@ -204,7 +204,7 @@ public class GNCDataHandler {
 		}
 
 		gncData.completeCollection();
-		
+
 		// This appears to slow it down (I hoped it would speed it up)
 		//if ( sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false) )
 		//	loadAccountBalances();
@@ -336,7 +336,7 @@ public class GNCDataHandler {
 			cursor.close();
 		}
 	}
-	
+
 	private Double getCommodityPrice(String GUID) {
 		if ( commodityPrices == null )
 		{
@@ -353,17 +353,17 @@ public class GNCDataHandler {
 		Double cp = commodityPrices.get(GUID);
 		if ( cp != null )
 			price = cp;
-		
+
 		return price;
 	}
-	
+
 	public void loadAccountBalances() {
 		Cursor cursor = sqliteHandle.rawQuery("select accounts.guid,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and "+ accountFilter +" group by accounts.name",null);
 		while ( cursor.moveToNext() ) {
 			String guid = cursor.getString(cursor.getColumnIndex("guid"));
 			Double bal = cursor.getDouble(cursor.getColumnIndex("bal"));
 			Account account = GetAccount(guid,false);
-			
+
 			if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) {
 				Double eqbal = cursor.getDouble(cursor.getColumnIndex("eqbal"));
 				if ( eqbal > 0.0 ) {
@@ -377,7 +377,7 @@ public class GNCDataHandler {
 			}
 		}
 	}
-	
+
 	/** Like GetAccountBalance, but recurse into the accounts which have this
 	 * one as their parent or grandparent etc.
 	 *
