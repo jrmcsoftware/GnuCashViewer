@@ -111,7 +111,7 @@ public class GNCAndroid extends Application implements
 			// file doesn't exist or is in some way invalid.
 			// Log a basic error, clear any old GNDDataHandler
 			// and report failure.
-			Log.v(TAG, e.toString());
+			Log.v(TAG, "Exception caught", e);
 			gncDataHandler = null;
 			return false;
 		}
