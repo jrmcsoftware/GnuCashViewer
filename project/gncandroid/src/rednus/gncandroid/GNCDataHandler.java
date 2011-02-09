@@ -427,23 +427,22 @@ public class GNCDataHandler {
 	 * @return A Map of the account names to GUIDs.
 	 */
 	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
-		String query;
-		String types;
-
 		StringBuffer tb = new StringBuffer();
-		Boolean first = true;
+		tb.append("select guid, name from accounts where account_type in (");
+		boolean first = true;
 		for (String at: accountTypes) {
 			if ( !first )
 				tb.append(", ");
-			tb.append("'"+at+"'");
+			tb.append("'" + at + "'");
 			first = false;
 		}
-		types = tb.toString();
+		tb.append(")");
+		if (!sp.getBoolean(res.getString(R.string.pref_show_hidden_account),
+				false))
+			tb.append(" hidden=0");
+		tb.append(" and non_std_scu=0 order by name");
 
-		query = "select guid, name from accounts where account_type in ("
-				+ types + ") and hidden=0 and non_std_scu=0 order by name";
-
-		Cursor cursor = sqliteHandle.rawQuery(query, null);
+		Cursor cursor = sqliteHandle.rawQuery(tb.toString(), null);
 		try {
 			TreeMap<String, String> listData = new TreeMap<String, String>();
 			while (cursor.moveToNext()) {
