@@ -65,7 +65,7 @@ public class AccountSpinnerData {
 		}
 
 		setBitmapFromAccountList(values);
-		constructAccountLists(getAccountListFromBitmap());
+		updateAccountNames();
 	}
 
 	/**
@@ -97,13 +97,10 @@ public class AccountSpinnerData {
 	}
 
 	/**
-	 * Gets the update account names.
-	 *
-	 * @return the update account names
+	 * Update account names. Used when there is a new bitmap of filtered accounts.
 	 */
-	public String[] getUpdateAccountNames() {
+	public void updateAccountNames() {
 		constructAccountLists(getAccountListFromBitmap());
-		return accountNames;
 	}
 
 	/**

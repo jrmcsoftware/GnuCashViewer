@@ -196,11 +196,10 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		 * android.view.ViewGroup)
 		 */
 		public View getView(int position, View convertView, ViewGroup parent) {
-			AccountItem item;
-			Account account;
+			AccountItem item = new AccountItem();
+			Account account = (Account) getItem(position);
 			// always create new view
 			convertView = mInflater.inflate(R.layout.account_item, null);
-			item = new AccountItem();
 			item.btnExpand = (ImageView) convertView
 					.findViewById(R.id.acc_more);
 			item.txvAccName = (TextView) convertView
@@ -209,7 +208,6 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 					.findViewById(R.id.acc_balance);
 			convertView.setTag(item);
 			// set values for account line item
-			account = (Account) getItem(position);
 			item.txvAccName.setText(account.name);
 
 			Double balance;

@@ -208,7 +208,8 @@ public class QuickEntryActivity extends Activity {
 				AlertDialog alert = builder.create();
 				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					public void onDismiss(DialogInterface arg0) {
-						setToFromAdapter(mTo, toAccountData.getUpdateAccountNames());
+						toAccountData.updateAccountNames();
+						setToFromAdapter(mTo, toAccountData.getAccountNames());
 					}
 				});
 				alert.show();
@@ -227,7 +228,8 @@ public class QuickEntryActivity extends Activity {
 				AlertDialog alert = builder.create();
 				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					public void onDismiss(DialogInterface arg0) {
-						setToFromAdapter(mFrom, fromAccountData.getUpdateAccountNames());
+						fromAccountData.updateAccountNames();
+						setToFromAdapter(mFrom, fromAccountData.getAccountNames());
 					}
 				});
 				alert.show();
@@ -322,14 +324,14 @@ public class QuickEntryActivity extends Activity {
 			String[] toAccountGUIDs = toAccountData.getAccountGUIDs();
 			String[] fromAccountGUIDs = fromAccountData.getAccountGUIDs();
 			if ( accountGUIDs != null ) {
-				for (int i = 0; i < accountGUIDs.length; i++) {
+				for (String GUID : accountGUIDs) {
 					for (int j = 0; j < toAccountGUIDs.length; j++)
-						if (toAccountGUIDs[j].equals(accountGUIDs[i])) {
+						if (toAccountGUIDs[j].equals(GUID)) {
 							mTo.setSelection(j);
 							break;
 						}
 					for (int k = 0; k < fromAccountGUIDs.length; k++)
-						if (fromAccountGUIDs[k].equals(accountGUIDs[i])) {
+						if (fromAccountGUIDs[k].equals(GUID)) {
 							mFrom.setSelection(k);
 							break;
 						}

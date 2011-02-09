@@ -40,7 +40,6 @@ public class FileChooser extends ListActivity {
 	private final String TAG = "File Chooser";
 	protected ArrayList<String> mFileList;
 	protected File mRoot;
-	public static final String FILEPATH_KEY = "formpath";
 	private GNCAndroid app;
 
 	/** Called when the activity is first created. */
