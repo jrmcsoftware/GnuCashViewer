@@ -685,7 +685,7 @@ public class GNCDataHandler {
 			String p = account.parentGUID;
 			fullName = account.name;
 			while (null != p) {
-				Account parent = (Account) gncData.accounts.get(p);
+				Account parent = accounts.get(p);
 				if (parent == null || parent.name.contains("Root")) {
 					break;
 				}
