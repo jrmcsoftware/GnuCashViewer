@@ -100,7 +100,7 @@ public class QuickEntryActivity extends Activity {
 		String[] toAccountFilter = {"EXPENSE"};
 		toAccountData = new AccountSpinnerData(app, toAccountFilter);
 
-		String[] fromAccountFilter = {"CREDIT", "BANK"};
+		String[] fromAccountFilter = {"CREDIT", "BANK", "CASH"};
 		fromAccountData = new AccountSpinnerData(app, fromAccountFilter);
 
 		setupTransferControls();
