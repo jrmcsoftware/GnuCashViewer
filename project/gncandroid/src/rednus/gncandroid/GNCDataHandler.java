@@ -712,23 +712,31 @@ public class GNCDataHandler {
 		 * @return fullName
 		 */
 		private String getFullName(Account account) {
-			String fullName;
 			// If we know the full name, then return it; otherwise, construct it
 			if (account.fullName != null)
 				return account.fullName;
+			// Use the non-thread-safe StringBuilder. Use a decent initial capacity, to avoid resizing.
+			StringBuilder fullNameBuilder = new StringBuilder(128);
 			// Follow chain of parents, pre-pending their names,
 			// so we get "Grandparent:Parent:Name"
 			String p = account.parentGUID;
-			fullName = account.name;
+			fullNameBuilder.append(account.name);
 			while (null != p) {
 				Account parent = accounts.get(p);
 				if (parent == null || parent.type.equals("ROOT")) {
 					break;
 				}
-				fullName = parent.name + ":" + fullName;
+				if (parent.fullName != null) {
+					fullNameBuilder.insert(0, ":");
+					fullNameBuilder.insert(0, parent.fullName);
+					break;
+				}
+				else
+					fullNameBuilder.insert(0, ":");
+					fullNameBuilder.insert(0, parent.name);
 				p = parent.parentGUID;
 			}
-			return fullName;
+			return fullNameBuilder.toString();
 		}
 
 		/**
