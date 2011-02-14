@@ -93,8 +93,8 @@ public class GNCDataHandler {
 		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
 		changeCount = SystemClock.uptimeMillis();
 
-		BuildAccountMapping();
-		GenAccountFilter();
+		buildAccountMapping();
+		genAccountFilter();
 
 		sqliteHandle = SQLiteDatabase.openDatabase(sp.getString(res.getString(R.string.pref_data_file_key), null), null,
 				SQLiteDatabase.OPEN_READWRITE
@@ -219,11 +219,11 @@ public class GNCDataHandler {
 		return changeCount;
 	}
 
-	public TreeMap<String, String> GetAccountTypeMapping() {
+	public TreeMap<String, String> getAccountTypeMapping() {
 		return accountTypeMapping;
 	}
 
-	public void BuildAccountMapping() {
+	public void buildAccountMapping() {
 		accountPrefMapping = new TreeMap<String, String>();
 		accountTypeMapping = new TreeMap<String, String>();
 
@@ -270,7 +270,7 @@ public class GNCDataHandler {
 		accountTypeMapping.put(res.getString(R.string.account_type_trading),"TRADING");
 	}
 
-	public void GenAccountFilter() {
+	public void genAccountFilter() {
 		StringBuffer filter = new StringBuffer();
 		if (!sp.getBoolean(res.getString(R.string.pref_show_hidden_account),
 				false))
@@ -284,7 +284,7 @@ public class GNCDataHandler {
 		accountFilter = filter.toString();
 	}
 
-	public Account GetAccount(String GUID, boolean getBalance) {
+	public Account getAccount(String GUID, boolean getBalance) {
 		Account account = gncData.accounts.get(GUID);
 		if (account == null)
 			return null;
@@ -295,8 +295,8 @@ public class GNCDataHandler {
 		return account;
 	}
 
-	private Account AccountFromCursor(Cursor cursor, boolean getBalance) {
-		return GetAccount(cursor.getString(cursor.getColumnIndex("guid")),
+	private Account accountFromCursor(Cursor cursor, boolean getBalance) {
+		return getAccount(cursor.getString(cursor.getColumnIndex("guid")),
 				getBalance);
 	}
 
@@ -306,7 +306,7 @@ public class GNCDataHandler {
 	 *
 	 * @return The account balance.
 	 */
-	public Double AccountBalance(Account account) {
+	public Double accountBalance(Account account) {
 		String[] queryArgs = { account.GUID };
 		String query;
 		String commodityGUID = null;
@@ -362,7 +362,7 @@ public class GNCDataHandler {
 		while ( cursor.moveToNext() ) {
 			String guid = cursor.getString(cursor.getColumnIndex("guid"));
 			Double bal = cursor.getDouble(cursor.getColumnIndex("bal"));
-			Account account = GetAccount(guid,false);
+			Account account = getAccount(guid, false);
 
 			if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) {
 				Double eqbal = cursor.getDouble(cursor.getColumnIndex("eqbal"));
@@ -378,13 +378,13 @@ public class GNCDataHandler {
 		}
 	}
 
-	/** Like GetAccountBalance, but recurse into the accounts which have this
+	/** Like getAccountBalance, but recurse into the accounts which have this
 	 * one as their parent or grandparent etc.
 	 *
 	 * @return the total balance.
 	 */
 	public Double getAccountBalanceWithChildren(String GUID) {
-		Account account = GetAccount(GUID,true);
+		Account account = getAccount(GUID,true);
 		if ( account == null )
 			return new Double(0.0);
 
@@ -411,7 +411,7 @@ public class GNCDataHandler {
 	 * @param GUID The GUID of the Account which has changed.
 	 */
 	public void markAccountChanged(String GUID) {
-		Account account = GetAccount(GUID, false);
+		Account account = getAccount(GUID, false);
 		if ( account != null ) {
 			account.balance = null;
 			account.balanceWithChildren = null;
@@ -426,7 +426,7 @@ public class GNCDataHandler {
 	 * @param String[] The list of requested account types.
 	 * @return A Map of the account names to GUIDs.
 	 */
-	public TreeMap<String, String> GetAccountList(String[] accountTypes) {
+	public TreeMap<String, String> getAccountList(String[] accountTypes) {
 		StringBuffer tb = new StringBuffer();
 		tb.append("select guid, name from accounts where account_type in (");
 		boolean first = true;
@@ -468,7 +468,7 @@ public class GNCDataHandler {
 		}
 	}
 
-	public LinkedHashMap<String, Account> GetSubAccounts(String rootGUID) {
+	public LinkedHashMap<String, Account> getSubAccounts(String rootGUID) {
 		String[] queryArgs = { rootGUID };
 		String filter = accountFilter==null||accountFilter==""?"":" and " + accountFilter;
 		Cursor cursor = sqliteHandle.rawQuery(
@@ -500,7 +500,7 @@ public class GNCDataHandler {
 	}
 
 	/** Return a list of the descriptions of recent transactions. */
-	public String[] GetTransactionDescriptions() {
+	public String[] getTransactionDescriptions() {
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);
 		String lastyear = Integer.toString(year - 1);
@@ -524,7 +524,7 @@ public class GNCDataHandler {
 		}
 	}
 
-	private String GenGUID() {
+	private String genGUID() {
 		UUID uuid = UUID.randomUUID();
 		String GUID = Long.toHexString(uuid.getMostSignificantBits())
 				+ Long.toHexString(uuid.getLeastSignificantBits());
@@ -552,7 +552,7 @@ public class GNCDataHandler {
 		try {
 			sqliteHandle.beginTransaction();
 
-			String tx_guid = GenGUID();
+			String tx_guid = genGUID();
 
 			Date now = new Date();
 			DateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -584,11 +584,11 @@ public class GNCDataHandler {
 			int value = (int) (d * demom);
 
 			// Second, the two splits.
-			Object[] toArgs = { GenGUID(), tx_guid, toGUID, "", "", "n", value,
+			Object[] toArgs = { genGUID(), tx_guid, toGUID, "", "", "n", value,
 					100, value, 100 };
 			sqliteHandle.execSQL(splitsInsert, toArgs);
 
-			Object[] fromArgs = { GenGUID(), tx_guid, fromGUID, "", "", "n",
+			Object[] fromArgs = { genGUID(), tx_guid, fromGUID, "", "", "n",
 					-value, 100, -value, 100 };
 			sqliteHandle.execSQL(splitsInsert, fromArgs);
 
@@ -606,7 +606,7 @@ public class GNCDataHandler {
 
 	}
 
-	public String[] GetAccountsFromTransactionDescription(String description) {
+	public String[] getAccountsFromTransactionDescription(String description) {
 		String transSQL = "select accounts.guid from accounts, splits where tx_guid = (select guid from transactions where description=? order by post_date desc limit 1) and account_guid = accounts.guid;";
 		String[] transSQLArgs = { description };
 		Cursor cursor = sqliteHandle.rawQuery(transSQL, transSQLArgs);

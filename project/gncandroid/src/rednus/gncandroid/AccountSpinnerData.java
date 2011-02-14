@@ -49,7 +49,7 @@ public class AccountSpinnerData {
 	public AccountSpinnerData(GNCAndroid app, String values[]) {
 		this.app = app;
 
-		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.GetAccountTypeMapping();
+		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.getAccountTypeMapping();
 		int size = accountTypeMapping.size();
 
 		accountTypeKeys = new CharSequence[size];
@@ -119,7 +119,7 @@ public class AccountSpinnerData {
 	 */
 	private void constructAccountLists(String[] filter) {
 		TreeMap<String, String> accounts = app.gncDataHandler
-				.GetAccountList(filter);
+				.getAccountList(filter);
 
 		if ( accounts == null )
 			return;

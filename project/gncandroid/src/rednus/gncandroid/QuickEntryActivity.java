@@ -176,7 +176,7 @@ public class QuickEntryActivity extends Activity {
 		setToFromAdapter(mTo, toAccountData.getAccountNames());
 		setToFromAdapter(mFrom, fromAccountData.getAccountNames());
 
-		descs = app.gncDataHandler.GetTransactionDescriptions();
+		descs = app.gncDataHandler.getTransactionDescriptions();
 		ArrayAdapter<String> descAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, descs);
 		mDescription.setAdapter(descAdapter);
@@ -319,7 +319,7 @@ public class QuickEntryActivity extends Activity {
 		public void onItemClick(AdapterView<?> parent, View view, int pos,
 				long id) {
 			String[] accountGUIDs = app.gncDataHandler
-					.GetAccountsFromTransactionDescription(mDescription
+					.getAccountsFromTransactionDescription(mDescription
 							.getText().toString());
 			String[] toAccountGUIDs = toAccountData.getAccountGUIDs();
 			String[] fromAccountGUIDs = fromAccountData.getAccountGUIDs();
