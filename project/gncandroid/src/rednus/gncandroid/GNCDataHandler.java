@@ -722,7 +722,7 @@ public class GNCDataHandler {
 			fullName = account.name;
 			while (null != p) {
 				Account parent = accounts.get(p);
-				if (parent == null || parent.name.contains("Root")) {
+				if (parent == null || parent.type.equals("ROOT")) {
 					break;
 				}
 				fullName = parent.name + ":" + fullName;
