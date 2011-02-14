@@ -573,6 +573,35 @@ public class GNCDataHandler {
 			Date enter = simpleFormat.parse(date);
 			String enterDate = formatter.format(enter);
 
+			// TODO This is not ideal. We should have support for
+			// entering transactions between arbitrary accounts,
+			// and popping up a box asking for the exchange rate
+			// and offering the most recent one from prices. This
+			// will require computing the fractions separately for
+			// each split. --Bruce Duncan, 14/2/2010
+			String commoditySQL = "select a.commodity_guid = b.commodity_guid from accounts as a, accounts as b where a.guid=? and b.guid=?";
+			String[] commoditySQLArgs = { toGUID, fromGUID };
+			Cursor cursor = sqliteHandle.rawQuery(commoditySQL, commoditySQLArgs);
+			try {
+				if (!cursor.moveToNext() || cursor.getInt(0) != 1)
+					throw new Exception("Cannot transfer between accounts in different currencies.");
+			}
+			finally {
+				cursor.close();
+			}
+
+			// NOTE: the columns are ints, not doubles.
+			int fraction = 0;
+			cursor = sqliteHandle.rawQuery("select fraction from accounts, commodities where accounts.commodity_guid = commodities.guid;", null);
+			try {
+				if (cursor.moveToNext())
+					fraction = cursor.getInt(cursor.getColumnIndex("fraction"));
+			}
+			finally {
+				cursor.close();
+			}
+			int value = (int)(Double.parseDouble(amount) * fraction);
+
 			// We need to insert 3 records (a transaction and two splits)
 			// CREATE TABLE splits (guid text(32) PRIMARY KEY NOT NULL, tx_guid
 			// text(32) NOT NULL, account_guid text(32) NOT NULL, memo
@@ -589,18 +618,13 @@ public class GNCDataHandler {
 					"", postDate, enterDate, description };
 			sqliteHandle.execSQL(transInsert, transArgs);
 
-			// Make a fraction. TODO "demom" should be read from the DB.
-			double d = Double.parseDouble(amount);
-			int demom = 100;
-			int value = (int) (d * demom);
-
 			// Second, the two splits.
 			Object[] toArgs = { genGUID(), tx_guid, toGUID, "", "", "n", value,
-					100, value, 100 };
+					fraction, value, fraction };
 			sqliteHandle.execSQL(splitsInsert, toArgs);
 
 			Object[] fromArgs = { genGUID(), tx_guid, fromGUID, "", "", "n",
-					-value, 100, -value, 100 };
+					-value, fraction, -value, fraction };
 			sqliteHandle.execSQL(splitsInsert, fromArgs);
 
 			sqliteHandle.setTransactionSuccessful();
