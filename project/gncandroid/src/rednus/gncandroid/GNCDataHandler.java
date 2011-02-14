@@ -284,12 +284,13 @@ public class GNCDataHandler {
 		StringBuffer filter = new StringBuffer();
 		if (!sp.getBoolean(res.getString(R.string.pref_show_hidden_account),
 				false))
-			filter.append(" hidden=0 ");
+			filter.append(" hidden=0 and");
 
+		filter.append(" account_type not in (");
 		for (String key : accountPrefMapping.keySet())
 			if (!sp.getBoolean(key, true))
-				filter.append(" and account_type!='"
-						+ accountPrefMapping.get(key) + "' ");
+				filter.append("'" + accountPrefMapping.get(key) + "', ");
+		filter.append(")");
 
 		accountFilter = filter.toString();
 	}
