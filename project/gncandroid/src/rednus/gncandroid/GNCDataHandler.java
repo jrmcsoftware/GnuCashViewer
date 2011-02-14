@@ -731,9 +731,10 @@ public class GNCDataHandler {
 					fullNameBuilder.insert(0, parent.fullName);
 					break;
 				}
-				else
+				else {
 					fullNameBuilder.insert(0, ":");
 					fullNameBuilder.insert(0, parent.name);
+				}
 				p = parent.parentGUID;
 			}
 			return fullNameBuilder.toString();
