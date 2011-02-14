@@ -55,7 +55,7 @@ public class FileChooser extends ListActivity {
 				android.R.drawable.stat_notify_sdcard);
 		// TODO It would be nice to start from the directory of the previously
 		// selected data file (if not null)
-		this.initialize(app.res.getString(R.string.def_folder));
+		initialize(app.res.getString(R.string.def_folder));
 	}
 
 	private void initialize(String path) {
@@ -75,7 +75,7 @@ public class FileChooser extends ListActivity {
 			mFileList.add("..");
 		getFiles(mRoot);
 		Collections.sort(mFileList, String.CASE_INSENSITIVE_ORDER);
-		((ArrayAdapter) this.getListAdapter()).notifyDataSetChanged();
+		((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
 	}
 
 	private boolean getDirectory(String path) {
@@ -137,7 +137,7 @@ public class FileChooser extends ListActivity {
 		else
 			f = new File(mRoot + "/" + mFileList.get(position));
 		if (f.isDirectory()) {
-			this.refreshRoot(f);
+			refreshRoot(f);
 			return;
 		}
 		Log.i(TAG, "File selected, returning result");

@@ -290,7 +290,7 @@ public class GNCDataHandler {
 			return null;
 
 		if (account.balance == null && getBalance)
-			account.balance = this.AccountBalance(account);
+			account.balance = accountBalance(account);
 
 		return account;
 	}
@@ -392,7 +392,7 @@ public class GNCDataHandler {
 			return account.balanceWithChildren;
 
 		Double bal = new Double(account.balance);
-		LinkedHashMap<String, Account> subAccounts = this.GetSubAccounts(GUID);
+		LinkedHashMap<String, Account> subAccounts = getSubAccounts(GUID);
 		if ( subAccounts != null ) {
 			for (String subGUID: subAccounts.keySet()) {
 				if ( !subGUID.equals(GUID) ) {
@@ -446,7 +446,7 @@ public class GNCDataHandler {
 		try {
 			TreeMap<String, String> listData = new TreeMap<String, String>();
 			while (cursor.moveToNext()) {
-				Account account = this.AccountFromCursor(cursor, false);
+				Account account = accountFromCursor(cursor, false);
 				if ( account == null )
 					return null;
 
@@ -476,14 +476,14 @@ public class GNCDataHandler {
 						+ filter + " order by name", queryArgs);
 		try {
 			LinkedHashMap<String, Account> listData = new LinkedHashMap<String, Account>();
-			Account rootAccount = this.GetAccount(rootGUID, true);
+			Account rootAccount = getAccount(rootGUID, true);
 			if ( rootAccount == null ) // this should never happen
 				return null;
 
 			if (!rootAccount.name.contains("Root"))
 				listData.put(rootGUID, rootAccount);
 			while (cursor.moveToNext()) {
-				Account account = this.AccountFromCursor(cursor, true);
+				Account account = accountFromCursor(cursor, true);
 				if ( account == null )  // this shouldn't happen either
 					return null;
 
@@ -594,8 +594,8 @@ public class GNCDataHandler {
 
 			sqliteHandle.setTransactionSuccessful();
 
-			this.markAccountChanged(toGUID);
-			this.markAccountChanged(fromGUID);
+			markAccountChanged(toGUID);
+			markAccountChanged(fromGUID);
 
 			return true;
 		} catch (Exception e) {
