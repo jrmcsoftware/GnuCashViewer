@@ -131,6 +131,11 @@ public class GNCDataHandler {
 				throw new InvalidDataException("Could not determine default currency.");
 			}
 		}
+		catch (Exception e) {
+			sqliteHandle.close();
+			sqliteHandle = null;
+			throw e;
+		}
 		finally {
 			cursor.close();
 		}
@@ -198,6 +203,11 @@ public class GNCDataHandler {
 
 				gncData.accounts.put(account.GUID, account);
 			}
+		}
+		catch (Exception e) {
+			sqliteHandle.close();
+			sqliteHandle = null;
+			throw e;
 		}
 		finally {
 			cursor.close();
