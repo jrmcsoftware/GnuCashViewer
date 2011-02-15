@@ -120,9 +120,10 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	 */
 	private void getListData(String rootGUID) {
 		// get root account
+		Account account = dc.accounts.get(rootGUID);
 		listData = app.gncDataHandler.getSubAccounts(rootGUID);
 		if ( sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false) )
-			app.gncDataHandler.getAccountBalanceWithChildren(rootGUID);
+			app.gncDataHandler.getAccountBalanceWithChildren(account);
 
 		currRootGUID = rootGUID;
 	}

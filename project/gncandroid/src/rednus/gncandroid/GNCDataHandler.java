@@ -214,10 +214,7 @@ public class GNCDataHandler {
 		}
 
 		gncData.completeCollection();
-
-		// This appears to slow it down (I hoped it would speed it up)
-		//if ( sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false) )
-		//	loadAccountBalances();
+		loadAccountBalances();
 	}
 
 	public void close() {
@@ -384,27 +381,22 @@ public class GNCDataHandler {
 		}
 	}
 
-	/** Like getAccountBalance, but recurse into the accounts which have this
+	/** Like getSubAccounts, but recurse into the accounts which have this
 	 * one as their parent or grandparent etc.
 	 *
 	 * @return the total balance.
 	 */
-	public Double getAccountBalanceWithChildren(String GUID) {
-		Account account = getAccount(GUID,true);
-		if ( account == null )
-			return new Double(0.0);
-
+	public Double getAccountBalanceWithChildren(Account account) {
 		if ( account.balanceWithChildren != null )  // Lets not recalc if we don't need to
 			return account.balanceWithChildren;
 
+		if (account.balance == null)
+			account.balance = accountBalance(account);
 		Double bal = new Double(account.balance);
-		LinkedHashMap<String, Account> subAccounts = getSubAccounts(GUID);
-		if ( subAccounts != null ) {
-			for (String subGUID: subAccounts.keySet()) {
-				if ( !subGUID.equals(GUID) ) {
-					Double subBalance = getAccountBalanceWithChildren(subGUID);
-					bal += subBalance;
-				}
+		for (String subGUID: account.subList) {
+			Account subAccount = gncData.accounts.get(subGUID);
+			if (subAccount != null && !subGUID.equals(account.GUID) ) {
+				bal += getAccountBalanceWithChildren(subAccount);
 			}
 		}
 		account.balanceWithChildren = bal;
