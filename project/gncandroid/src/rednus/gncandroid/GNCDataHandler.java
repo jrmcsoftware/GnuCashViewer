@@ -320,10 +320,7 @@ public class GNCDataHandler {
 	public Double accountBalance(Account account) {
 		String[] queryArgs = { account.GUID };
 		String query;
-		String commodityGUID = null;
-		boolean equity = false;
-		if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") )
-			equity = true;
+		boolean equity = account.type.equals("STOCK") || account.type.equals("MUTUAL");
 		if ( equity )
 			query = "select accounts.*,sum(CAST(quantity_num AS REAL)/quantity_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
 		else
@@ -360,12 +357,10 @@ public class GNCDataHandler {
 			}
 			cursor.close();
 		}
-		Double price = 0.0;
 		Double cp = commodityPrices.get(GUID);
 		if ( cp != null )
-			price = cp;
-
-		return price;
+			return cp;
+		return new Double(0.0);
 	}
 
 	public void loadAccountBalances() {
@@ -687,10 +682,10 @@ public class GNCDataHandler {
 		 */
 		public void completeCollection() {
 			Log.i(TAG, "Calculating Data...");
-			// get full names
-			updateFullNames();
 			// create account tree
 			createAccountTree();
+			// get full names
+			updateFullNames(accounts.get(gncData.book.rootAccountGUID));
 			Log.i(TAG, "Calculating Data...Done");
 		}
 
@@ -699,9 +694,13 @@ public class GNCDataHandler {
 		 * the accounts, this method will update accounts with fullName
 		 * attribute
 		 */
-		private void updateFullNames() {
-			for (Account account : accounts.values())
-				account.fullName = getFullName(account);
+		private void updateFullNames(Account account) {
+			for (String subAccountGUID : account.subList) {
+				Account subAccount = accounts.get(subAccountGUID);
+				subAccount.fullName = getFullName(subAccount);
+				if (subAccount.subList.size() > 0)
+					updateFullNames(subAccount);
+			}
 		}
 
 		/**
