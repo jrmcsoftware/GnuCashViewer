@@ -155,6 +155,13 @@ public class GNCDataHandler {
 
 			cursor = sqliteHandle.rawQuery("select accounts.guid as aguid,commodities.guid as cguid,* from accounts left outer join commodities on accounts.commodity_guid = commodities.guid", null);
 			Map<String, Commodity> currencies = new TreeMap<String, Commodity>(); // Map currency codes to Commodity objects.
+			// OPTIMISATION! calling cursor.getColumnIndex in a
+			// loop turns out to be fairly slow.
+			int aguidIndex = cursor.getColumnIndex("aguid");
+			int nameIndex = cursor.getColumnIndex("name");
+			int account_typeIndex = cursor.getColumnIndex("account_type");
+			int parent_guidIndex = cursor.getColumnIndex("parent_guid");
+			int mnemonicIndex = cursor.getColumnIndex("mnemonic");
 			while (cursor.moveToNext()) {
 				Account account = new Account();
 				// CREATE TABLE accounts (guid text(32) PRIMARY KEY NOT
@@ -163,18 +170,11 @@ public class GNCDataHandler {
 				// NOT NULL, non_std_scu integer NOT NULL, parent_guid
 				// text(32), code text(2048), description text(2048), hidden
 				// integer, placeholder integer);
-				account.GUID = cursor.getString(cursor
-						.getColumnIndex("aguid"));
-				account.name = cursor.getString(cursor
-						.getColumnIndex("name"));
-				account.type = cursor.getString(cursor
-						.getColumnIndex("account_type"));
-				account.parentGUID = cursor.getString(cursor
-						.getColumnIndex("parent_guid"));
-				account.code = cursor.getString(cursor
-						.getColumnIndex("code"));
-				String mnemonic = cursor.getString(cursor
-                                                        .getColumnIndex("mnemonic"));
+				account.GUID = cursor.getString(aguidIndex);
+				account.name = cursor.getString(nameIndex);
+				account.type = cursor.getString(account_typeIndex);
+				account.parentGUID = cursor.getString(parent_guidIndex);
+				String mnemonic = cursor.getString(mnemonicIndex);
 				if (mnemonic == null)
 					// This is probably the root account.
 					account.commodity = null;
@@ -196,10 +196,6 @@ public class GNCDataHandler {
 						currencies.put(account.commodity.mnemonic, account.commodity);
 					}
 				}
-				account.description = cursor.getString(cursor
-						.getColumnIndex("description"));
-				account.placeholder = cursor.getInt(cursor
-						.getColumnIndex("placeholder")) != 0;
 
 				gncData.accounts.put(account.GUID, account);
 			}
