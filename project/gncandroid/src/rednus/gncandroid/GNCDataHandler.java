@@ -210,8 +210,8 @@ public class GNCDataHandler {
 		}
 
 		gncData.completeCollection();
-		//loadAccountBalances();
-	}
+		loadAccountBalances();
+}
 
 	public void close() {
 		if (sqliteHandle != null)
@@ -364,13 +364,16 @@ public class GNCDataHandler {
 	public void loadAccountBalances() {
 		Cursor cursor = sqliteHandle.rawQuery("select accounts.guid,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and "+ accountFilter +" group by accounts.name",null);
 		try {
+			int guidIndex = cursor.getColumnIndex("guid");
+			int balIndex = cursor.getColumnIndex("bal");
+			int eqBalIndex = cursor.getColumnIndex("eqbal");
 			while ( cursor.moveToNext() ) {
-				String guid = cursor.getString(cursor.getColumnIndex("guid"));
-				Double bal = cursor.getDouble(cursor.getColumnIndex("bal"));
+				String guid = cursor.getString(guidIndex);
+				Double bal = cursor.getDouble(balIndex);
 				Account account = getAccount(guid, false);
 
 				if ( account.type.equals("STOCK") || account.type.equals("MUTUAL") ) {
-					Double eqbal = cursor.getDouble(cursor.getColumnIndex("eqbal"));
+					Double eqbal = cursor.getDouble(eqBalIndex);
 					if ( eqbal > 0.0 ) {
 						Double commodityPrice = getCommodityPrice(account.commodity.guid);
 						account.balance = eqbal*commodityPrice;
@@ -443,7 +446,7 @@ public class GNCDataHandler {
 		tb.append(")");
 		if (!sp.getBoolean(res.getString(R.string.pref_show_hidden_account),
 				false))
-			tb.append(" hidden=0");
+			tb.append(" and hidden=0");
 		tb.append(" and non_std_scu=0 order by name");
 
 		Cursor cursor = sqliteHandle.rawQuery(tb.toString(), null);
