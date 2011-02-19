@@ -210,7 +210,7 @@ public class GNCDataHandler {
 		}
 
 		gncData.completeCollection();
-		loadAccountBalances();
+		//loadAccountBalances();
 	}
 
 	public void close() {
@@ -280,9 +280,14 @@ public class GNCDataHandler {
 			filter.append(" hidden=0 and");
 
 		filter.append(" account_type not in (");
+		boolean first = true;
 		for (String key : accountPrefMapping.keySet())
-			if (!sp.getBoolean(key, true))
-				filter.append("'" + accountPrefMapping.get(key) + "', ");
+			if (!sp.getBoolean(key, true)) {
+				if ( !first )
+					filter.append(", ");
+				first = false;
+				filter.append("'" + accountPrefMapping.get(key) + "'");
+			}
 		filter.append(")");
 
 		accountFilter = filter.toString();
