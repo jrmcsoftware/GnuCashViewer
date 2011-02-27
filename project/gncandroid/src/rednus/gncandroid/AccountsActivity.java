@@ -22,7 +22,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
 import java.util.TreeMap;
-import rednus.gncandroid.Account;
+import rednus.gncandroid.GNCDataHandler.Account;
 import rednus.gncandroid.GNCDataHandler.DataCollection;
 import android.app.Activity;
 import android.content.Context;
