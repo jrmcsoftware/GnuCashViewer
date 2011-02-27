@@ -795,27 +795,7 @@ public class GNCDataHandler {
 		public Currency currency;
 	}
 
-	public class Account {
-		// fields for an account
-		public String type;
-		public String GUID;
-		public String parentGUID;
-		public String name;
-		public String fullName;
-		public String notes;
-		public String description;
-		public String code;
-		public boolean placeholder;
-		public Commodity commodity;
-		// calculated balance amount
-		public Double balance;
-		public Double balanceWithChildren;
-		// transactions that belong to account
-		public List<String> trans = new ArrayList<String>();
-		public boolean hasChildren = false;
-		// id's of child-accounts
-		public List<String> subList = new ArrayList<String>();
-	}
+
 
 	public class AccountComparator implements Comparator<Account> {
 		public int compare(Account o1, Account o2) {

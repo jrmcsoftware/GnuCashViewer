@@ -1,0 +1,37 @@
+Gnucash for Android (gnc4a) Project Overview
+============================================
+
+-----------------
+Files and Folders
+-----------------
+
+COPYING				- GPL v3 Agreement
+HACKING  			- Conventions used, basic devel orientation
+OVERVIEW  			- This file 
+project/gnc4android		- Project root directory
+   AndroidManifest.xml		- Program android manifest
+   assets			- (currently empty)
+   bin				- compiled programs, scripts
+   default.properties		- Auto-generated properties file (don't touch)
+   gen				- Auto-generated resource files (don't touch)
+   res				- Android resource XML files (UI layout, etc...)
+   src/				- Source files- root directory
+   test/			- Test project files
+
+------------------------
+Source File Descriptions
+------------------------
+
+AccountsActivity.java    	- Action Listener/Event Handler for UI
+AccountSpinnerData.java  	- Account Spinner class- creates account list and interprets account types
+BookDetailsActivity.java  	- This class displays opened Book details
+GNCAndroid.java           	- Main program class
+GNCDataHandler.java		- Data Handling/SQL interfacing classes
+FileChooser.java		- Class for choosing accounts file
+MainView.java			- Main UI class- calls subactivities
+Preferences.java		- Displays and edits user preferences
+QuickEntryActivity.java		- Quick entry transaction class
+
+
+-----------------------------------------------------------
+Last updated 02/26/2011 Ryan Ward (coffeetopology@gmail.com) 
