@@ -191,8 +191,10 @@ public class GNCDataHandler {
 								.getColumnIndex("quote_source"));
 						account.commodity.mnemonic = cursor.getString(cursor
 								.getColumnIndex("mnemonic"));
-						account.commodity.currency = Currency.getInstance(
-								account.commodity.mnemonic);
+						try { // Sometime we fund names here which causes an exception
+							account.commodity.currency = Currency.getInstance(
+									account.commodity.mnemonic);
+						} catch (Exception e) {}
 						currencies.put(account.commodity.mnemonic, account.commodity);
 					}
 				}
