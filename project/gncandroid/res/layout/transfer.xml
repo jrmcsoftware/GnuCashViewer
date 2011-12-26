@@ -26,6 +26,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:prompt="@string/label_transtype"
+	    	android:layout_weight="10"
 	    />
 	</TableRow>
 	<TableRow
@@ -47,7 +48,9 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_height="wrap_content"
 		android:padding="3dip"
 		android:text="@+id/ButtonDate"
-		android:layout_width="match_parent">
+		android:layout_width="match_parent"
+		android:layout_weight="10"
+		>
 		</Button>
 	</TableRow>
 	<TableRow
@@ -70,6 +73,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text=""
+		android:layout_weight="10"
 		>
 		</AutoCompleteTextView>
 	</TableRow>
@@ -92,7 +96,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/spinner_to" 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
-		>
+		android:layout_weight="10">
 		</Spinner>
 		<Button 
 		android:text="@string/account_filter_button_label" 
@@ -120,6 +124,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/spinner_from" 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		android:layout_weight="10"
 		>
 		</Spinner>
 		<Button 
@@ -150,6 +155,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_height="wrap_content"
 		android:text=""
 		android:numeric="decimal|signed"
+		android:layout_weight="10"
 		>
 		</EditText>
 	</TableRow>
