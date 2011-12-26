@@ -31,6 +31,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -39,8 +41,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.googlecode.androidannotations.annotations.AfterViews;
+import com.googlecode.androidannotations.annotations.Click;
+import com.googlecode.androidannotations.annotations.EActivity;
+import com.googlecode.androidannotations.annotations.ViewById;
 
 /**
  * This class displays Quick entry screen.
@@ -48,6 +53,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
  * @author John Gray
  * 
  */
+@EActivity(R.layout.quickentry)
 public class QuickEntryActivity extends Activity {
 	// TAG for this activity
 	private static final String TAG = "QuickEntryActivity";
@@ -61,13 +67,31 @@ public class QuickEntryActivity extends Activity {
 	private int mMonth;
 	private int mDay;
 
-	private AutoCompleteTextView mDescription;
-	private Spinner mTo;
-	private Spinner mFrom;
-	private EditText mAmount;
-	private Button dateButton;
-	private Spinner transtypeSpinner;
+	@ViewById
+	AutoCompleteTextView edittext_descriptoin;
+	@ViewById
+	Spinner spinner_to;
+	@ViewById
+	Spinner spinner_from;
+	@ViewById
+	EditText edittext_amount;
+	@ViewById
+	Button button_date;
+	@ViewById
+	Spinner transtype_spinner;
 	private String[] descs;
+
+	@ViewById
+	Button to_filter_button;
+	@ViewById
+	Button from_filter_button;
+
+	@ViewById
+	Button saveButton;
+	
+	@ViewById
+	Button clearButton;
+
 
 	AccountSpinnerData toAccountData;
 	AccountSpinnerData fromAccountData;
@@ -80,22 +104,20 @@ public class QuickEntryActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	}
+	
+	@AfterViews
+	void updateTextWithDate() {
 		// get application
 		app = (GNCAndroid) getApplication();
-		Log.i(TAG, "Activity created");
-		setContentView(R.layout.quickentry);
 
-		Button saveButton = (Button) findViewById(R.id.ButtonSave);
-		Button clearButton = (Button) findViewById(R.id.ButtonClear);
-
-		transtypeSpinner = (Spinner) findViewById(R.id.transtype_spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				QuickEntryActivity.this, R.array.transtype_array,
 				android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		transtypeSpinner.setAdapter(adapter);
+		transtype_spinner.setAdapter(adapter);
 
-		transtypeSpinner.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
+		transtype_spinner.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
 
 		String[] toAccountFilter = {"EXPENSE"};
 		toAccountData = new AccountSpinnerData(app, toAccountFilter);
@@ -104,54 +126,50 @@ public class QuickEntryActivity extends Activity {
 		fromAccountData = new AccountSpinnerData(app, fromAccountFilter);
 
 		setupTransferControls();
+	}
+	
+	@Click
+	void clearButton() {
+		if (currentView == 0) {
+			final Calendar c = Calendar.getInstance();
+			button_date.setText(DateFormat.format("MM/dd/yyyy", c));
 
-		saveButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				int toPos = mTo.getSelectedItemPosition();
-				int fromPos = mFrom.getSelectedItemPosition();
+			edittext_descriptoin.setText("");
+			edittext_amount.setText("");
+		}		
+	}
+	
+	@Click
+	void saveButton() {
+		int toPos = spinner_to.getSelectedItemPosition();
+		int fromPos = spinner_from.getSelectedItemPosition();
 
-				Log.v(TAG, "Save button clicked. toPos = " + toPos + ", fromPos = " + fromPos);
-				if (toPos < 0 || fromPos < 0) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
-					builder.setTitle(R.string.alert_select_title).setMessage(R.string.alert_select_message);
-					builder.setPositiveButton(R.string.alert_dialog_ok,
-                                                                                new DialogInterface.OnClickListener() {
-                                                                                        public void onClick(
-                                                                                                        DialogInterface dialog,
-                                                                                                        int whichButton) {
-                                                                                        }
-                                                                                });
-					builder.create().show();
-					return;
-				}
-				String toGUID = toAccountData.getAccountGUID(toPos);
-				String fromGUID = fromAccountData.getAccountGUID(fromPos);
+		Log.v(TAG, "Save button clicked. toPos = " + toPos + ", fromPos = " + fromPos);
+		if (toPos < 0 || fromPos < 0) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
+			builder.setTitle(R.string.alert_select_title).setMessage(R.string.alert_select_message);
+			builder.setPositiveButton(R.string.alert_dialog_ok,
+                new DialogInterface.OnClickListener() {
+                        public void onClick(
+                                        DialogInterface dialog,
+                                        int whichButton) {
+                        }
+                });
+			builder.create().show();
+			return;
+		}
+		String toGUID = toAccountData.getAccountGUID(toPos);
+		String fromGUID = fromAccountData.getAccountGUID(fromPos);
 
-				String date = dateButton.getText().toString();
-				String amount = mAmount.getText().toString();
+		String date = button_date.getText().toString();
+		String amount = edittext_amount.getText().toString();
 
-				boolean result = app.gncDataHandler.insertTransaction(toGUID, fromGUID,
-						mDescription.getText().toString(), amount, date);
-				if ( result  )
-					Toast.makeText(QuickEntryActivity.this, "Transaction added...", Toast.LENGTH_LONG).show();
-				else
-					Toast.makeText(QuickEntryActivity.this, "Insert failed!", Toast.LENGTH_LONG).show();
-			}
-		});
-
-		clearButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				if (currentView == 0) {
-					final Calendar c = Calendar.getInstance();
-					dateButton.setText(DateFormat.format("MM/dd/yyyy", c));
-
-					mDescription.setText("");
-					mAmount.setText("");
-				}
-			}
-		});
-
-		Log.i(TAG, "Activity Finished");
+		boolean result = app.gncDataHandler.insertTransaction(toGUID, fromGUID,
+				edittext_descriptoin.getText().toString(), amount, date);
+		if ( result  )
+			Toast.makeText(QuickEntryActivity.this, "Transaction added...", Toast.LENGTH_LONG).show();
+		else
+			Toast.makeText(QuickEntryActivity.this, "Insert failed!", Toast.LENGTH_LONG).show();
 	}
 
 	private void setToFromAdapter(Spinner spinner, String[] values) {
@@ -164,77 +182,67 @@ public class QuickEntryActivity extends Activity {
 	}
 
 	private void setupTransferControls() {
-		mDescription = (AutoCompleteTextView) findViewById(R.id.EditTextDescriptoin);
-		mTo = (Spinner) findViewById(R.id.spinner_to);
-		mFrom = (Spinner) findViewById(R.id.spinner_from);
-		mAmount = (EditText) findViewById(R.id.amount);
-		dateButton = (Button) findViewById(R.id.ButtonDate);
 
-		Button toFilterButton = (Button) findViewById(R.id.to_filter_button);
-		Button fromFilterButton = (Button) findViewById(R.id.from_filter_button);
-
-		setToFromAdapter(mTo, toAccountData.getAccountNames());
-		setToFromAdapter(mFrom, fromAccountData.getAccountNames());
+		setToFromAdapter(spinner_to, toAccountData.getAccountNames());
+		setToFromAdapter(spinner_from, fromAccountData.getAccountNames());
 
 		descs = app.gncDataHandler.getTransactionDescriptions();
 		ArrayAdapter<String> descAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_dropdown_item_1line, descs);
-		mDescription.setAdapter(descAdapter);
-		mDescription.setOnItemClickListener(new DescriptionOnItemClickListener());
+		edittext_descriptoin.setAdapter(descAdapter);
+		edittext_descriptoin.setOnItemClickListener(new DescriptionOnItemClickListener());
 
 		// get the current date
 		final Calendar c = Calendar.getInstance();
-		dateButton.setText(DateFormat.format("MM/dd/yyyy", c));
+		button_date.setText(DateFormat.format("MM/dd/yyyy", c));
 
 		mYear = c.get(Calendar.YEAR);
 		mMonth = c.get(Calendar.MONTH);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 
-		dateButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				showDialog(DATE_DIALOG_ID);
+	}
+	
+	@Click
+	void button_date() {
+		showDialog(DATE_DIALOG_ID);
+	}
+	
+	@Click
+	void to_filter_button() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
+		builder.setTitle("Select Account Types");
+		builder.setMultiChoiceItems(toAccountData.getAccountTypeKeys(), toAccountData.accountTypes, new DialogInterface.OnMultiChoiceClickListener() {
+			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+				toAccountData.accountTypes[which] = isChecked;
 			}
 		});
-
-		toFilterButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
-				builder.setTitle("Select Account Types");
-				builder.setMultiChoiceItems(toAccountData.getAccountTypeKeys(), toAccountData.accountTypes, new DialogInterface.OnMultiChoiceClickListener() {
-					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-						toAccountData.accountTypes[which] = isChecked;
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
-					public void onDismiss(DialogInterface arg0) {
-						toAccountData.updateAccountNames();
-						setToFromAdapter(mTo, toAccountData.getAccountNames());
-					}
-				});
-				alert.show();
+		AlertDialog alert = builder.create();
+		alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+			public void onDismiss(DialogInterface arg0) {
+				toAccountData.updateAccountNames();
+				setToFromAdapter(spinner_to, toAccountData.getAccountNames());
 			}
 		});
-
-		fromFilterButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
-				builder.setTitle("Select Account Types");
-				builder.setMultiChoiceItems(fromAccountData.getAccountTypeKeys(), fromAccountData.accountTypes, new DialogInterface.OnMultiChoiceClickListener() {
-					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-						fromAccountData.accountTypes[which] = isChecked;
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
-					public void onDismiss(DialogInterface arg0) {
-						fromAccountData.updateAccountNames();
-						setToFromAdapter(mFrom, fromAccountData.getAccountNames());
-					}
-				});
-				alert.show();
+		alert.show();
+	}
+	
+	@Click
+	void from_filter_button() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(QuickEntryActivity.this);
+		builder.setTitle("Select Account Types");
+		builder.setMultiChoiceItems(fromAccountData.getAccountTypeKeys(), fromAccountData.accountTypes, new DialogInterface.OnMultiChoiceClickListener() {
+			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+				fromAccountData.accountTypes[which] = isChecked;
 			}
 		});
+		AlertDialog alert = builder.create();
+		alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+			public void onDismiss(DialogInterface arg0) {
+				fromAccountData.updateAccountNames();
+				setToFromAdapter(spinner_from, fromAccountData.getAccountNames());
+			}
+		});
+		alert.show();
 	}
 
 	@Override
@@ -297,16 +305,16 @@ public class QuickEntryActivity extends Activity {
 					break;
 				}
 
-				transtypeSpinner = (Spinner) findViewById(R.id.transtype_spinner);
+				transtype_spinner = (Spinner) findViewById(R.id.transtype_spinner);
 				ArrayAdapter<CharSequence> adapter = ArrayAdapter
 						.createFromResource(QuickEntryActivity.this,
 								R.array.transtype_array,
 								android.R.layout.simple_spinner_item);
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				transtypeSpinner.setAdapter(adapter);
-				transtypeSpinner.setSelection(pos);
+				transtype_spinner.setAdapter(adapter);
+				transtype_spinner.setSelection(pos);
 
-				transtypeSpinner.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
+				transtype_spinner.setOnItemSelectedListener(new TransTypeOnItemSelectedListener());
 			}
 		}
 
@@ -319,7 +327,7 @@ public class QuickEntryActivity extends Activity {
 		public void onItemClick(AdapterView<?> parent, View view, int pos,
 				long id) {
 			String[] accountGUIDs = app.gncDataHandler
-					.getAccountsFromTransactionDescription(mDescription
+					.getAccountsFromTransactionDescription(edittext_descriptoin
 							.getText().toString());
 			String[] toAccountGUIDs = toAccountData.getAccountGUIDs();
 			String[] fromAccountGUIDs = fromAccountData.getAccountGUIDs();
@@ -327,12 +335,12 @@ public class QuickEntryActivity extends Activity {
 				for (String GUID : accountGUIDs) {
 					for (int j = 0; j < toAccountGUIDs.length; j++)
 						if (toAccountGUIDs[j].equals(GUID)) {
-							mTo.setSelection(j);
+							spinner_to.setSelection(j);
 							break;
 						}
 					for (int k = 0; k < fromAccountGUIDs.length; k++)
 						if (fromAccountGUIDs[k].equals(GUID)) {
-							mFrom.setSelection(k);
+							spinner_from.setSelection(k);
 							break;
 						}
 				}

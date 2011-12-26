@@ -43,7 +43,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		>
 		</TextView>
 		<Button
-		android:id="@+id/ButtonDate"
+		android:id="@+id/button_date"
 		android:layout_height="wrap_content"
 		android:padding="3dip"
 		android:text="@+id/ButtonDate"
@@ -66,7 +66,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		</TextView>
 		<AutoCompleteTextView
 		class="rednus.gncandroid.QuickEntryActivity$DescriptionAutoComplete"
-		android:id="@+id/EditTextDescriptoin"
+		android:id="@+id/edittext_descriptoin"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text=""
@@ -145,7 +145,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		>
 		</TextView>
 		<EditText
-		android:id="@+id/amount"
+		android:id="@+id/edittext_amount"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text=""

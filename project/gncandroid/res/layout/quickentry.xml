@@ -15,7 +15,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_alignParentLeft="true"
 	>
 		<Button
-		android:id="@+id/ButtonSave"
+		android:id="@+id/saveButton"
 		android:layout_width="75px"
 		android:layout_height="wrap_content"
 		android:padding="3dip"
@@ -23,7 +23,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		>
 		</Button>
 		<Button
-		android:id="@+id/ButtonClear"
+		android:id="@+id/clearButton"
 		android:layout_width="75px"
 		android:layout_height="wrap_content"
 		android:padding="3dip"
