@@ -535,8 +535,12 @@ public class GNCDataHandler {
 
 	private String genGUID() {
 		UUID uuid = UUID.randomUUID();
-		String GUID = Long.toHexString(uuid.getMostSignificantBits())
-				+ Long.toHexString(uuid.getLeastSignificantBits());
+		String GUID = "";
+		while ( GUID.length() != 32 ) {
+			GUID= Long.toHexString(uuid.getMostSignificantBits())
+					+ Long.toHexString(uuid.getLeastSignificantBits());			
+			
+		}
 		return GUID;
 	}
 
