@@ -5,6 +5,15 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 xmlns:android="http://schemas.android.com/apk/res/android"
 >
+<ScrollView android:id="@+id/MainForm" 
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+    >
+<RelativeLayout
+android:id="@+id/widget55"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+>
 <include android:id="@+id/field_table" layout="@layout/transfer" />
 <TableRow
 	android:id="@+id/widget53"
@@ -34,4 +43,6 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		>
 		</Button>
 	</TableRow>
+</RelativeLayout>
+</ScrollView>
 </RelativeLayout>

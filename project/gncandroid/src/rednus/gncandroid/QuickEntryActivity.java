@@ -166,8 +166,11 @@ public class QuickEntryActivity extends Activity {
 
 		boolean result = app.gncDataHandler.insertTransaction(toGUID, fromGUID,
 				edittext_descriptoin.getText().toString(), amount, date);
-		if ( result  )
+		if ( result  ) {
 			Toast.makeText(QuickEntryActivity.this, "Transaction added...", Toast.LENGTH_LONG).show();
+			edittext_amount.getText().clear();
+			edittext_descriptoin.getText().clear();
+		}
 		else
 			Toast.makeText(QuickEntryActivity.this, "Insert failed!", Toast.LENGTH_LONG).show();
 	}

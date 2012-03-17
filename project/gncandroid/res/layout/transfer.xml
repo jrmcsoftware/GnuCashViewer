@@ -5,6 +5,7 @@ android:layout_height="wrap_content"
 android:orientation="vertical"
 android:layout_alignParentTop="true"
 android:layout_alignParentLeft="true"
+android:windowSoftInputMode="adjustPan"
 xmlns:android="http://schemas.android.com/apk/res/android"
 >
 	<TableRow
