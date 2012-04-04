@@ -26,7 +26,6 @@
 </application>
 	<permission android:label="Access SD Card"
 		android:name="android.permission.WRITE_EXTERNAL_STORAGE"></permission>
-	
 	<supports-screens android:resizeable="true"
                   android:smallScreens="true"
                   android:normalScreens="true"
