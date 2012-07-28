@@ -53,7 +53,7 @@ public class TransactionActivity extends ListActivity {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			TextView t = (TextView) view.findViewById(R.id.textView_date);
-			String date = cursor.getString(cursor.getColumnIndex("enter_date"));
+			String date = cursor.getString(cursor.getColumnIndex("post_date"));
 			Date d;
 			try {
 				d = dateparser.parse(date);
