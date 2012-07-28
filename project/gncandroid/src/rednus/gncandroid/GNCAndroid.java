@@ -38,6 +38,7 @@ public class GNCAndroid extends Application implements
 	// TAG for this activity
 	private static final String TAG = "GNCAndroid";
 	public static final String SPN = "gnc4aprefs";
+	public static final String TRANS_ACT_ACCOUNT_PARAM = "Account.GUID";
 	public Resources res;
 	public GNCDataHandler gncDataHandler;
 	private SharedPreferences sp;

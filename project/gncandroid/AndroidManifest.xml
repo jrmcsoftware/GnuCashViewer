@@ -22,7 +22,8 @@
 		</activity>
 		<activity android:name=".AccountsActivity"></activity>
 		<activity android:name=".QuickEntryActivity_"></activity>
-	<activity android:name=".BookDetailsActivity"></activity>
+		<activity android:name=".TransactionActivity"></activity>
+			<activity android:name=".BookDetailsActivity"></activity>
 </application>
 	<permission android:label="Access SD Card"
 		android:name="android.permission.WRITE_EXTERNAL_STORAGE"></permission>

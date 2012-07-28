@@ -22,15 +22,18 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
 import java.util.TreeMap;
+
 import rednus.gncandroid.GNCDataHandler.Account;
 import rednus.gncandroid.GNCDataHandler.DataCollection;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -38,6 +41,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author shyam.avvari
@@ -223,6 +227,8 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			// set values for account line item
 			item.txvAccName.setText(account.name);
 
+			item.accGUID = account.GUID;
+			
 			Double balance;
 			if (sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false))
 				balance = account.balanceWithChildren;
@@ -249,6 +255,24 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 				item.btnExpand.setImageResource(R.drawable.list_expanded);
 			else if (account.hasChildren)
 				item.btnExpand.setImageResource(R.drawable.list_collapsed);
+			
+			if ( !account.hasChildren ) {
+				convertView.setOnLongClickListener(new OnLongClickListener() {
+					
+					@Override
+					public boolean onLongClick(View v) {
+						// TODO Auto-generated method stub
+						AccountItem item = (AccountItem)v.getTag();
+						Intent intent = new Intent(AccountsActivity.this, TransactionActivity.class);
+						Bundle b = new Bundle();
+						b.putString(GNCAndroid.TRANS_ACT_ACCOUNT_PARAM, item.accGUID); //Your id
+						intent.putExtras(b); //Put your id to your next Intent
+						startActivity(intent);
+						return true;
+					}
+				});
+			}
+
 			return convertView;
 		}
 
@@ -298,6 +322,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			ImageView btnExpand;
 			TextView txvAccName;
 			TextView txvBalance;
+			String accGUID;
 		}
 	}
 }
