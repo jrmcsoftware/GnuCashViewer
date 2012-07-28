@@ -238,7 +238,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			// Get a NumberFormat instance which will format a currency in the default Locale.
 			NumberFormat formatter = NumberFormat.getCurrencyInstance();
 			// Set the currency to the one specified in the account.
-			if (formatter instanceof DecimalFormat)
+			if (formatter instanceof DecimalFormat && account.commodity.currency != null )
 				formatter.setCurrency(account.commodity.currency);
 			// Display the formatted balance.
 			item.txvBalance.setText(formatter.format(balance));
