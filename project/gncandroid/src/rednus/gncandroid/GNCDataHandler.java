@@ -350,9 +350,9 @@ public class GNCDataHandler {
 		String query;
 		boolean equity = account.type.equals("STOCK") || account.type.equals("MUTUAL");
 		if ( equity )
-			query = "select transactions.guid as _id, transactions.post_date, transactions.description, -CAST(quantity_num AS REAL)/quantity_denom as amount from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and reconcile_state='n' and accounts.guid=? order by transactions.post_date";
-		else
 			query = "select transactions.guid as _id, transactions.post_date, transactions.description, -CAST(value_num AS REAL)/value_num as amount from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and reconcile_state='n' and accounts.guid=? order by transactions.post_date";
+		else
+			query = "select transactions.guid as _id, transactions.post_date, transactions.description, -CAST(quantity_num AS REAL)/quantity_denom as amount from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and reconcile_state='n' and accounts.guid=? order by transactions.post_date";
 
 		return sqliteHandle.rawQuery(query, queryArgs);
 	}
