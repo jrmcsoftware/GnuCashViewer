@@ -345,10 +345,10 @@ public class GNCDataHandler {
 		}
 	}
 	
-	public Cursor getAccountTransations(String accountGUID) {
-		String[] queryArgs = { accountGUID };
+	public Cursor getAccountTransations(Account account) {
+		String[] queryArgs = { account.GUID };
 		String query;
-		boolean equity = true; //= account.type.equals("STOCK") || account.type.equals("MUTUAL");
+		boolean equity = account.type.equals("STOCK") || account.type.equals("MUTUAL");
 		if ( equity )
 			query = "select transactions.guid as _id, transactions.post_date, transactions.description, -CAST(quantity_num AS REAL)/quantity_denom as amount from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and reconcile_state='n' and accounts.guid=? order by transactions.post_date";
 		else

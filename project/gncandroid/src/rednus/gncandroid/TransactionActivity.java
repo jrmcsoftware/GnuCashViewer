@@ -1,10 +1,14 @@
 package rednus.gncandroid;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import rednus.gncandroid.GNCDataHandler.Account;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 public class TransactionActivity extends ListActivity {
 
 	private GNCAndroid app;
+	private Account account;
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -31,8 +36,9 @@ public class TransactionActivity extends ListActivity {
 		app = (GNCAndroid) getApplication();
 
 		Bundle b = getIntent().getExtras();
-		String account = b.getString(GNCAndroid.TRANS_ACT_ACCOUNT_PARAM);
+		String accountGuid = b.getString(GNCAndroid.TRANS_ACT_ACCOUNT_PARAM);
 		
+		account = app.gncDataHandler.getAccount(accountGuid, false);
 		Cursor cursor = app.gncDataHandler.getAccountTransations(account);
 
         // set this adapter as your ListActivity's adapter
@@ -70,7 +76,21 @@ public class TransactionActivity extends ListActivity {
 			t = (TextView) view.findViewById(R.id.textView_amount);
 			String amount = cursor.getString(cursor.getColumnIndex("amount"));
 			Double damount = Double.parseDouble(amount);
-			t.setText(String.format("%.2f", damount));
+			// Get a NumberFormat instance which will format a currency in the default Locale.
+			NumberFormat formatter = NumberFormat.getCurrencyInstance();
+			// Set the currency to the one specified in the account.
+			if (formatter instanceof DecimalFormat && account.commodity.currency != null )
+				formatter.setCurrency(account.commodity.currency);
+			// Display the formatted balance.
+			t.setText(formatter.format(damount));
+
+			// set amount colour
+			if (damount < 0)
+				t.setTextColor(app.res
+						.getColor(R.color.color_negative));
+			else
+				t.setTextColor(app.res
+						.getColor(R.color.color_positive));
 		}
 
 		@Override
