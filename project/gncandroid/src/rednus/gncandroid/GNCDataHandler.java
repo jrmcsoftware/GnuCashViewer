@@ -470,15 +470,17 @@ public class GNCDataHandler {
 				Account account = accountFromCursor(cursor, false);
 				if ( account == null )
 					return null;
-
-				if (sp.getBoolean(res.getString(R.string.pref_long_account_names), false))
-					listData.put(account.fullName, account.GUID);
-				else {
-					String guid = listData.get(account.name);
-					if (guid == null)
-						listData.put(account.name, account.GUID);
-					else { // We have a name collision
+				
+				if ( account.fullName != null ) {
+					if (sp.getBoolean(res.getString(R.string.pref_long_account_names), false))
 						listData.put(account.fullName, account.GUID);
+					else {
+						String guid = listData.get(account.name);
+						if (guid == null)
+							listData.put(account.name, account.GUID);
+						else { // We have a name collision
+							listData.put(account.fullName, account.GUID);
+						}
 					}
 				}
 			}
