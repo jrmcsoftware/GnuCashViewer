@@ -322,9 +322,15 @@ public class GNCDataHandler {
 		String query;
 		boolean equity = account.type.equals("STOCK") || account.type.equals("MUTUAL");
 		if ( equity )
-			query = "select accounts.*,sum(CAST(quantity_num AS REAL)/quantity_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
+			query = "select accounts.*,sum(CAST(quantity_num AS REAL)/quantity_denom) as bal " +
+					"from accounts,transactions,splits " +
+					"where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? " +
+					"group by accounts.guid";
 		else
-			query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? group by accounts.name";
+			query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal " +
+					"from accounts,transactions,splits " +
+					"where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? " +
+					"group by accounts.guid";
 
 		Cursor cursor = sqliteHandle.rawQuery(query, queryArgs);
 		try {
@@ -376,7 +382,10 @@ public class GNCDataHandler {
 	}
 
 	public void loadAccountBalances() {
-		Cursor cursor = sqliteHandle.rawQuery("select accounts.guid,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and "+ accountFilter +" group by accounts.name",null);
+		Cursor cursor = sqliteHandle.rawQuery("select accounts.guid,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal " +
+				"from accounts,transactions,splits " +
+				"where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and "+ accountFilter +" " +
+						"group by accounts.guid",null);
 		try {
 			int guidIndex = cursor.getColumnIndex("guid");
 			int balIndex = cursor.getColumnIndex("bal");
