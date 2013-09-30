@@ -57,7 +57,7 @@ import com.googlecode.androidannotations.annotations.ViewById;
 public class QuickEntryActivity extends Activity {
 	// TAG for this activity
 	private static final String TAG = "QuickEntryActivity";
-	private GNCAndroid app;
+	private GnuCashViewer app;
 
 	static final int DATE_DIALOG_ID = 0;
 
@@ -109,7 +109,7 @@ public class QuickEntryActivity extends Activity {
 	@AfterViews
 	void updateTextWithDate() {
 		// get application
-		app = (GNCAndroid) getApplication();
+		app = (GnuCashViewer) getApplication();
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				QuickEntryActivity.this, R.array.transtype_array,

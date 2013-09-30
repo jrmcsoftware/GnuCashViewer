@@ -40,13 +40,13 @@ public class FileChooser extends ListActivity {
 	private final String TAG = "File Chooser";
 	protected ArrayList<String> mFileList;
 	protected File mRoot;
-	private GNCAndroid app;
+	private GnuCashViewer app;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		app = (GNCAndroid) getApplication();
+		app = (GnuCashViewer) getApplication();
 		Log.i(TAG, "Filechooser started");
 		// make this a dialogue
 		requestWindowFeature(Window.FEATURE_LEFT_ICON);

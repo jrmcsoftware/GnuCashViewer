@@ -38,7 +38,7 @@ import android.widget.TabHost;
  */
 public class MainView extends TabActivity {
 	private static final String TAG = "MainView"; // TAG for this activity
-	private GNCAndroid app; // Application Reference
+	private GnuCashViewer app; // Application Reference
 	private ProgressDialog pd; // progress bar
 	private boolean screensCreated = false;
 
@@ -52,7 +52,7 @@ public class MainView extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// get application
-		app = (GNCAndroid) getApplication();
+		app = (GnuCashViewer) getApplication();
 		// first check if data file is set otherwise show preferences
 		// Read data if has
 		if (app.canReadData()) {
@@ -107,7 +107,7 @@ public class MainView extends TabActivity {
 				intent);
 		tabHost.addTab(spec);
 		// add quick tab
-		intent = new Intent().setClass(this, QuickEntryActivity_.class);
+		intent = new Intent().setClass(this, QuickEntryActivity.class);
 		spec = tabHost.newTabSpec("quick").setIndicator(
 				getString(R.string.ic_tab_quick),
 				app.res.getDrawable(R.drawable.ic_tab_actions)).setContent(

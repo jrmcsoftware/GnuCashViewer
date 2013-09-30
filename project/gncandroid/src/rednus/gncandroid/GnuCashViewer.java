@@ -33,7 +33,7 @@ import android.util.Log;
  * @author shyam.avvari
  * 
  */
-public class GNCAndroid extends Application implements
+public class GnuCashViewer extends Application implements
 		OnSharedPreferenceChangeListener {
 	// TAG for this activity
 	private static final String TAG = "GNCAndroid";

@@ -35,7 +35,7 @@ import android.widget.TextView;
  */
 public class BookDetailsActivity extends Activity {
 	private static final String TAG = "BookDetailsActivity";
-	private GNCAndroid app;
+	private GnuCashViewer app;
 	private SharedPreferences sp;
 
 	/**
@@ -47,11 +47,11 @@ public class BookDetailsActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		app = (GNCAndroid) getApplication();
-		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
+		app = (GnuCashViewer) getApplication();
+		sp = app.getSharedPreferences(GnuCashViewer.SPN, Context.MODE_PRIVATE);
 		Log.i(TAG, "Showing Book Details screen..");
 		// set activity title
-		setTitle(getString(R.string.app_descr) + " > "
+		setTitle(getString(R.string.app_name) + " > "
 				+ app.res.getString(R.string.menu_book));
 		// set view
 		setContentView(R.layout.bookdetails);

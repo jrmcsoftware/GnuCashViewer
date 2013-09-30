@@ -27,7 +27,7 @@ import java.util.TreeMap;
  * @author gray
  */
 public class AccountSpinnerData {
-	private GNCAndroid app;
+	private GnuCashViewer app;
 
 	// Two parallel arrays of matching account names and GUIDs
 	private String[] accountNames;
@@ -46,7 +46,7 @@ public class AccountSpinnerData {
 	 * @param app The app
 	 * @param values The initial account types
 	 */
-	public AccountSpinnerData(GNCAndroid app, String values[]) {
+	public AccountSpinnerData(GnuCashViewer app, String values[]) {
 		this.app = app;
 
 		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.getAccountTypeMapping();

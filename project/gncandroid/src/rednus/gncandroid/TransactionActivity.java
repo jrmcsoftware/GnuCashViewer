@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 public class TransactionActivity extends ListActivity {
 
-	private GNCAndroid app;
+	private GnuCashViewer app;
 	private Account account;
 
 	/* (non-Javadoc)
@@ -33,10 +33,10 @@ public class TransactionActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		
 		// get application
-		app = (GNCAndroid) getApplication();
+		app = (GnuCashViewer) getApplication();
 
 		Bundle b = getIntent().getExtras();
-		String accountGuid = b.getString(GNCAndroid.TRANS_ACT_ACCOUNT_PARAM);
+		String accountGuid = b.getString(GnuCashViewer.TRANS_ACT_ACCOUNT_PARAM);
 		
 		account = app.gncDataHandler.getAccount(accountGuid, false);
 		Cursor cursor = app.gncDataHandler.getAccountTransations(account);

@@ -37,7 +37,7 @@ import android.util.Log;
 public class Preferences extends PreferenceActivity {
 	private static final String TAG = "Preferences";
 	private static final int RESULT_FOR_FILE = 7;
-	private GNCAndroid app;
+	private GnuCashViewer app;
 	private String pref_data_file_key;
 
 	/**
@@ -50,13 +50,13 @@ public class Preferences extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		app = (GNCAndroid) getApplication();
+		app = (GnuCashViewer) getApplication();
 		Log.i(TAG, "Showing Preferences screen..");
 		// set activity title
 		setTitle(getString(R.string.app_name) + " > "
 				+ app.res.getString(R.string.menu_prefs));
 		// set preferences file name
-		getPreferenceManager().setSharedPreferencesName(GNCAndroid.SPN);
+		getPreferenceManager().setSharedPreferencesName(GnuCashViewer.SPN);
 		// Load the preferences from an XML resource
 		addPreferencesFromResource(R.xml.preferences);
 		// get custom field to capture on click

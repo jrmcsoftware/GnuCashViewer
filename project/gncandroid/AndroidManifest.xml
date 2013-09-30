@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="rednus.gncandroid" android:versionCode="1"
-	android:installLocation="preferExternal" android:versionName="@string/app_version">
+	package="rednus.gncandroid" android:versionCode="2"
+	android:versionName=".1">
+	<permission android:label="Access SD Card"
+		android:name="android.permission.WRITE_EXTERNAL_STORAGE"></permission>
+	<uses-sdk android:minSdkVersion="3"/>
+	<supports-screens android:resizeable="true"
+                  android:smallScreens="true"
+                  android:normalScreens="true"
+                  android:largeScreens="true"
+                  android:anyDensity="true"/>
 	<application android:icon="@drawable/icon"
-		android:description="@string/app_descr" android:label="@string/app_name"
-		android:theme="@android:style/Theme" android:allowClearUserData="true" android:name="@string/application">
-		<activity android:icon="@drawable/icon" android:description="@string/app_descr"
-			android:name="MainView" android:label="@string/app_descr">
+		android:description="@string/app_name" android:label="@string/app_name"
+		android:theme="@android:style/Theme" android:allowClearUserData="true" android:name="GnuCashViewer">
+		<activity android:icon="@drawable/icon" android:description="@string/app_name"
+			android:name="MainView" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -25,11 +33,4 @@
 		<activity android:name=".TransactionActivity"></activity>
 			<activity android:name=".BookDetailsActivity"></activity>
 </application>
-	<permission android:label="Access SD Card"
-		android:name="android.permission.WRITE_EXTERNAL_STORAGE"></permission>
-	<supports-screens android:resizeable="true"
-                  android:smallScreens="true"
-                  android:normalScreens="true"
-                  android:largeScreens="true"
-                  android:anyDensity="true"/>
 </manifest>

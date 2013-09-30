@@ -60,7 +60,7 @@ class InvalidDataException extends Exception {
  */
 public class GNCDataHandler {
 	private static final String TAG = "GNCDataHandler"; // TAG for this activity
-	private GNCAndroid app; // Application
+	private GnuCashViewer app; // Application
 	private DataCollection gncData = new DataCollection(); // The parsed book.
 	private SQLiteDatabase sqliteHandle;
 	private SharedPreferences sp;
@@ -85,12 +85,12 @@ public class GNCDataHandler {
 	 * @throws Exception
 	 *         if there was a problem reading the data file.
 	 */
-	public GNCDataHandler(GNCAndroid app) throws Exception {
+	public GNCDataHandler(GnuCashViewer app) throws Exception {
 		Cursor cursor;
 		this.app = app;
 
 		res = app.getResources();
-		sp = app.getSharedPreferences(GNCAndroid.SPN, Context.MODE_PRIVATE);
+		sp = app.getSharedPreferences(GnuCashViewer.SPN, Context.MODE_PRIVATE);
 		changeCount = SystemClock.uptimeMillis();
 
 		buildAccountMapping();

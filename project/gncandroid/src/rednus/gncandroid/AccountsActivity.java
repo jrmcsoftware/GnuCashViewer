@@ -51,7 +51,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	// TAG for this activity
 	private static final String TAG = "AccountsActivity";
 	// Application data
-	private GNCAndroid app;
+	private GnuCashViewer app;
 	// The GUID which roots the tree of accounts.
 	// ** NOTE: This GUID is the root of the accounts in this view, _not_ the gnucash "Root" account. **
 	private String currRootGUID;
@@ -76,8 +76,8 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "Creating activity...");
-		app = (GNCAndroid) getApplication();
-		sp = getSharedPreferences(GNCAndroid.SPN, MODE_PRIVATE);
+		app = (GnuCashViewer) getApplication();
+		sp = getSharedPreferences(GnuCashViewer.SPN, MODE_PRIVATE);
 		// Get first object of data
 		dc = app.gncDataHandler.getGncData();
 		dataChangeCount = app.gncDataHandler.getChangeCount();
@@ -265,7 +265,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 						AccountItem item = (AccountItem)v.getTag();
 						Intent intent = new Intent(AccountsActivity.this, TransactionActivity.class);
 						Bundle b = new Bundle();
-						b.putString(GNCAndroid.TRANS_ACT_ACCOUNT_PARAM, item.accGUID); //Your id
+						b.putString(GnuCashViewer.TRANS_ACT_ACCOUNT_PARAM, item.accGUID); //Your id
 						intent.putExtras(b); //Put your id to your next Intent
 						startActivity(intent);
 						return true;
