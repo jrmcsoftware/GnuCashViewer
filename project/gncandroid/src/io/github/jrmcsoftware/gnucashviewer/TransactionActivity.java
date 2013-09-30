@@ -1,4 +1,6 @@
-package rednus.gncandroid;
+package io.github.jrmcsoftware.gnucashviewer;
+
+import io.github.jrmcsoftware.gnucashviewer.GNCDataHandler.Account;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -7,8 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import rednus.gncandroid.GNCDataHandler.Account;
 
 import android.app.ListActivity;
 import android.content.Context;

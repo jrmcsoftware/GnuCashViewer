@@ -16,15 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rednus.gncandroid;
+package io.github.jrmcsoftware.gnucashviewer;
+
+import io.github.jrmcsoftware.gnucashviewer.GNCDataHandler.Account;
+import io.github.jrmcsoftware.gnucashviewer.GNCDataHandler.DataCollection;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
 import java.util.TreeMap;
 
-import rednus.gncandroid.GNCDataHandler.Account;
-import rednus.gncandroid.GNCDataHandler.DataCollection;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

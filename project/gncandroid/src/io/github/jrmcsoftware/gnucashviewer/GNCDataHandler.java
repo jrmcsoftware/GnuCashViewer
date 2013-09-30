@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rednus.gncandroid;
+package io.github.jrmcsoftware.gnucashviewer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -97,7 +97,7 @@ public class GNCDataHandler {
 		genAccountFilter();
 
 		sqliteHandle = SQLiteDatabase.openDatabase(sp.getString(res.getString(R.string.pref_data_file_key), null), null,
-				SQLiteDatabase.OPEN_READWRITE
+				SQLiteDatabase.OPEN_READONLY
 						| SQLiteDatabase.NO_LOCALIZED_COLLATORS);
 		Currency currency = Currency.getInstance(Locale.getDefault());
 		String ccode = currency.getCurrencyCode();

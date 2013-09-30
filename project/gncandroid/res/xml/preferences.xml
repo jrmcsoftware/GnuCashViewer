@@ -8,7 +8,7 @@
 			android:title="@string/pref_data_file_location"
 			android:summary="@string/no_data_file">
 			<intent
-				android:action="rednus.GNCAndroid.action.FILECHOOSER" />
+				android:action="io.github.jrmcsoftware.gnucashviewer.action.FILECHOOSER" />
 		</Preference>
 	</PreferenceCategory>
 	<PreferenceCategory

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rednus.gncandroid;
+package io.github.jrmcsoftware.gnucashviewer;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -68,7 +68,7 @@ public class Preferences extends PreferenceActivity {
 						if (pref.getKey().equalsIgnoreCase(pref_data_file_key)) {
 							Log.i(TAG, "Clicked custom field.. show file chooser");
 							Intent intent = new Intent(
-									"rednus.GNCAndroid.action.FILECHOOSER");
+									"io.github.jrmcsoftware.gnucashviewer.action.FILECHOOSER");
 							startActivityForResult(intent, RESULT_FOR_FILE);
 							return true;
 						}

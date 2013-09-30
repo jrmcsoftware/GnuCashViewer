@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package rednus.gncandroid;
+package io.github.jrmcsoftware.gnucashviewer;
 
 import android.app.Application;
 import android.content.SharedPreferences;

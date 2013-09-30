@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="rednus.gncandroid" android:versionCode="2"
+	package="io.github.jrmcsoftware.gnucashviewer" android:versionCode="2"
 	android:versionName=".1">
 	<permission android:label="Access SD Card"
-		android:name="android.permission.WRITE_EXTERNAL_STORAGE"></permission>
-	<uses-sdk android:minSdkVersion="3"/>
+		android:name="android.permission.READ_EXTERNAL_STORAGE"></permission>
+	<uses-sdk android:minSdkVersion="5"/>
 	<supports-screens android:resizeable="true"
                   android:smallScreens="true"
                   android:normalScreens="true"
@@ -24,7 +24,7 @@
 		<activity android:name=".FileChooser" android:theme="@android:style/Theme.Dialog"
 			android:label="@string/file_choose_title">
 			<intent-filter>
-				<action android:name="rednus.GNCAndroid.action.FILECHOOSER"></action>
+				<action android:name="io.github.jrmcsoftware.gnucashviewer.action.FILECHOOSER"></action>
 				<category android:name="android.intent.category.DEFAULT"></category>
 			</intent-filter>
 		</activity>
