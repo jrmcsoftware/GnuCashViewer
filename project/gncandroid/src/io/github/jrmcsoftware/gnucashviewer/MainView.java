@@ -107,7 +107,7 @@ public class MainView extends TabActivity {
 				intent);
 		tabHost.addTab(spec);
 		// add quick tab
-		intent = new Intent().setClass(this, QuickEntryActivity.class);
+		intent = new Intent().setClass(this, QuickEntryActivity_.class);
 		spec = tabHost.newTabSpec("quick").setIndicator(
 				getString(R.string.ic_tab_quick),
 				app.res.getDrawable(R.drawable.ic_tab_actions)).setContent(
