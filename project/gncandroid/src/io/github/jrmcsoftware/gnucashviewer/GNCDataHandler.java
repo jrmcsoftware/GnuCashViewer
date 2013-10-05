@@ -103,7 +103,10 @@ public class GNCDataHandler {
 		String ccode = currency.getCurrencyCode();
 
 		try {
-			cursor = sqliteHandle.rawQuery("select guid, mnemonic from commodities where namespace = 'CURRENCY';", null);
+			cursor = sqliteHandle.rawQuery(
+					"select guid, mnemonic " +
+					"from commodities " +
+					"where namespace = 'CURRENCY';", null);
 		}
 		catch (Exception e) {
 			sqliteHandle.close();
@@ -153,7 +156,11 @@ public class GNCDataHandler {
 			}
 			cursor.close();
 
-			cursor = sqliteHandle.rawQuery("select accounts.guid as aguid,commodities.guid as cguid,* from accounts left outer join commodities on accounts.commodity_guid = commodities.guid", null);
+			cursor = sqliteHandle.rawQuery(
+					"select accounts.guid as aguid, commodities.guid as cguid,* " +
+					"from accounts " +
+					"left outer join commodities " +
+					"        on accounts.commodity_guid = commodities.guid", null);
 			Map<String, Commodity> currencies = new TreeMap<String, Commodity>(); // Map currency codes to Commodity objects.
 			// OPTIMISATION! calling cursor.getColumnIndex in a
 			// loop turns out to be fairly slow.
@@ -323,13 +330,13 @@ public class GNCDataHandler {
 		boolean equity = account.type.equals("STOCK") || account.type.equals("MUTUAL");
 		if ( equity )
 			query = "select accounts.*,sum(CAST(quantity_num AS REAL)/quantity_denom) as bal " +
-					"from accounts,transactions,splits " +
-					"where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? " +
+					"from accounts, transactions, splits " +
+					"where splits.tx_guid=transactions.guid and splits.account_guid = accounts.guid and accounts.guid=? " +
 					"group by accounts.guid";
 		else
 			query = "select accounts.*,sum(CAST(value_num AS REAL)/value_denom) as bal " +
-					"from accounts,transactions,splits " +
-					"where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? " +
+					"from accounts, transactions, splits " +
+					"where splits.tx_guid=transactions.guid and splits.account_guid = accounts.guid and accounts.guid=? " +
 					"group by accounts.guid";
 
 		Cursor cursor = sqliteHandle.rawQuery(query, queryArgs);
@@ -355,11 +362,19 @@ public class GNCDataHandler {
 		String[] queryArgs = { account.GUID };
 		String query;
 		boolean equity = account.type.equals("STOCK") || account.type.equals("MUTUAL");
-		if ( equity )
-			query = "select transactions.guid as _id, transactions.post_date, transactions.description, -CAST(value_num AS REAL)/value_num as amount from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? order by transactions.post_date desc";
-		else
-			query = "select transactions.guid as _id, transactions.post_date, transactions.description, -CAST(quantity_num AS REAL)/quantity_denom as amount from accounts,transactions,splits where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? order by transactions.post_date desc";
-
+		
+		String amountCalculation;
+		if ( equity ) {
+			amountCalculation = "CAST(value_num AS REAL)/value_num";
+		} else {
+			amountCalculation = "CAST(quantity_num AS REAL)/quantity_denom";
+		}
+		
+		query = "select transactions.guid as _id, transactions.post_date, transactions.description, " + amountCalculation + " as amount " +
+				"from accounts, transactions, splits " +
+				"where splits.tx_guid = transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? " +
+				"order by transactions.post_date desc";
+		
 		return sqliteHandle.rawQuery(query, queryArgs);
 	}
 
@@ -367,7 +382,11 @@ public class GNCDataHandler {
 		if ( commodityPrices == null )
 		{
 			commodityPrices = new TreeMap<String,Double>();
-			Cursor cursor = sqliteHandle.rawQuery("select commodity_guid,CAST(value_num AS REAL)/value_denom as price from prices group by commodity_guid order by date desc", null);
+			Cursor cursor = sqliteHandle.rawQuery(
+					"select commodity_guid, CAST(value_num AS REAL)/value_denom as price " +
+					"from prices " +
+					"group by commodity_guid " +
+					"order by date desc", null);
 			while ( cursor.moveToNext() ) {
 				String commodity_guid = cursor.getString(cursor.getColumnIndex("commodity_guid"));
 				Double price = cursor.getDouble(cursor.getColumnIndex("price"));
@@ -382,7 +401,8 @@ public class GNCDataHandler {
 	}
 
 	public void loadAccountBalances() {
-		Cursor cursor = sqliteHandle.rawQuery("select accounts.guid,sum(CAST(value_num AS REAL)/value_denom) as bal,sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal " +
+		Cursor cursor = sqliteHandle.rawQuery(
+				"select accounts.guid, sum(CAST(value_num AS REAL)/value_denom) as bal, sum(CAST(quantity_num AS REAL)/quantity_denom) as eqbal " +
 				"from accounts,transactions,splits " +
 				"where splits.tx_guid=transactions.guid and splits.account_guid=accounts.guid and "+ accountFilter +" " +
 						"group by accounts.guid",null);
