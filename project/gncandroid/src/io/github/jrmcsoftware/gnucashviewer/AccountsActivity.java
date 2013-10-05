@@ -34,7 +34,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnLongClickListener;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -42,7 +42,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author shyam.avvari
@@ -258,10 +257,10 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 				item.btnExpand.setImageResource(R.drawable.list_collapsed);
 			
 			if ( !account.hasChildren ) {
-				convertView.setOnLongClickListener(new OnLongClickListener() {
+				convertView.setOnClickListener(new OnClickListener() {
 					
 					@Override
-					public boolean onLongClick(View v) {
+					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						AccountItem item = (AccountItem)v.getTag();
 						Intent intent = new Intent(AccountsActivity.this, TransactionActivity.class);
@@ -269,7 +268,6 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 						b.putString(GnuCashViewer.TRANS_ACT_ACCOUNT_PARAM, item.accGUID); //Your id
 						intent.putExtras(b); //Put your id to your next Intent
 						startActivity(intent);
-						return true;
 					}
 				});
 			}
