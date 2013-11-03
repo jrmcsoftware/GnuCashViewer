@@ -29,7 +29,6 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".AccountsActivity"></activity>
-		<activity android:name=".QuickEntryActivity_"></activity>
 		<activity android:name=".TransactionActivity"></activity>
 			<activity android:name=".BookDetailsActivity"></activity>
 </application>

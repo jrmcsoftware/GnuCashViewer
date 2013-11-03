@@ -106,23 +106,6 @@ public class MainView extends TabActivity {
 				app.res.getDrawable(R.drawable.ic_tab_accounts)).setContent(
 				intent);
 		tabHost.addTab(spec);
-		// add quick tab
-		intent = new Intent().setClass(this, QuickEntryActivity_.class);
-		spec = tabHost.newTabSpec("quick").setIndicator(
-				getString(R.string.ic_tab_quick),
-				app.res.getDrawable(R.drawable.ic_tab_actions)).setContent(
-				intent);
-		tabHost.addTab(spec);
-		// #TODO add third tab
-		// // // add actions tab
-		// // intent = new Intent().setClass(this, ActionsActivity.class);
-		// // spec = tabHost
-		// // .newTabSpec("actions")
-		// // .setIndicator(getString(R.string.ic_tab_actions),
-		// // app.res.getDrawable(R.drawable.ic_tab_actions))
-		// // .setContent(intent);
-		// // tabHost.addTab(spec);
-		// set default tab
 		tabHost.setCurrentTab(0);
 		Log.i(TAG, "Showing main screen...Done");
 	}
