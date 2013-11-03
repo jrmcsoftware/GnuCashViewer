@@ -38,8 +38,8 @@ public class TransactionActivity extends ListActivity {
 		Bundle b = getIntent().getExtras();
 		String accountGuid = b.getString(GnuCashViewer.TRANS_ACT_ACCOUNT_PARAM);
 		
-		account = app.gncDataHandler.getAccount(accountGuid, false);
-		Cursor cursor = app.gncDataHandler.getAccountTransations(account);
+		account = app.getGncDataHandler().getAccount(accountGuid, false);
+		Cursor cursor = app.getGncDataHandler().getAccountTransations(account);
 
         // set this adapter as your ListActivity's adapter
         this.setListAdapter(new TransactionsAdapter(this,cursor));

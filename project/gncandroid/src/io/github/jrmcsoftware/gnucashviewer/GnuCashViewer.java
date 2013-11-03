@@ -36,11 +36,11 @@ import android.util.Log;
 public class GnuCashViewer extends Application implements
 		OnSharedPreferenceChangeListener {
 	// TAG for this activity
-	private static final String TAG = "GNCAndroid";
+	private static final String TAG = "GnuCashViewer";
 	public static final String SPN = "gnc4aprefs";
 	public static final String TRANS_ACT_ACCOUNT_PARAM = "Account.GUID";
 	public Resources res;
-	public GNCDataHandler gncDataHandler;
+	private GNCDataHandler gncDataHandler;
 	private SharedPreferences sp;
 	private boolean reloadFile = true;
 
@@ -117,5 +117,13 @@ public class GnuCashViewer extends Application implements
 			return false;
 		}
 		return true;
+	}
+
+	public GNCDataHandler getGncDataHandler() {
+		return gncDataHandler;
+	}
+
+	public void setGncDataHandler(GNCDataHandler gncDataHandler) {
+		this.gncDataHandler = gncDataHandler;
 	}
 }

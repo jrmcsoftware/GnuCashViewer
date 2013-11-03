@@ -49,7 +49,7 @@ public class AccountSpinnerData {
 	public AccountSpinnerData(GnuCashViewer app, String values[]) {
 		this.app = app;
 
-		TreeMap<String, String> accountTypeMapping = app.gncDataHandler.getAccountTypeMapping();
+		TreeMap<String, String> accountTypeMapping = app.getGncDataHandler().getAccountTypeMapping();
 		int size = accountTypeMapping.size();
 
 		accountTypeKeys = new CharSequence[size];
@@ -118,7 +118,7 @@ public class AccountSpinnerData {
 	 * @param filter The account type filter
 	 */
 	private void constructAccountLists(String[] filter) {
-		TreeMap<String, String> accounts = app.gncDataHandler
+		TreeMap<String, String> accounts = app.getGncDataHandler()
 				.getAccountList(filter);
 
 		if ( accounts == null )

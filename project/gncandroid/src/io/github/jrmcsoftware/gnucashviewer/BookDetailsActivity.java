@@ -67,7 +67,7 @@ public class BookDetailsActivity extends Activity {
 		((TextView) this.findViewById(R.id.data_file_name))
 				.setText(sp.getString(app.res.getString(R.string.pref_data_file_key), null));
 		// get data collection
-		DataCollection gncData = app.gncDataHandler.getGncData();
+		DataCollection gncData = app.getGncDataHandler().getGncData();
 		// set book version
 		((TextView) this.findViewById(R.id.book_version))
 				.setText(gncData.book.version);

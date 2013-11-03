@@ -27,12 +27,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -66,6 +71,10 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	// The adapter which will form the view of this activity.
 	private AccountsListAdapter lstAdapter;
 
+	GnuCashViewer getApp() {
+		return app != null ? app : (GnuCashViewer) getApplication();
+	}
+	
 	/*
 	 * When activity is started, and if Data file is already read, then display
 	 * account information tree.
@@ -76,12 +85,24 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "Creating activity...");
-		app = (GnuCashViewer) getApplication();
 		sp = getSharedPreferences(GnuCashViewer.SPN, MODE_PRIVATE);
-		// Get first object of data
-		dc = app.gncDataHandler.getGncData();
-		dataChangeCount = app.gncDataHandler.getChangeCount();
-		getListData(dc.book.rootAccountGUID);
+		// first check if data file is set otherwise show preferences
+		// Read data if has
+		if (getApp().canReadData()) {
+			if (getApp().isReloadFile())  { // The data may already be read
+				getApp().readData();
+			}
+			// Get first object of data
+			dc = getApp().getGncDataHandler().getGncData();
+			dataChangeCount = getApp().getGncDataHandler().getChangeCount();
+			getListData(dc.book.rootAccountGUID);
+		} else {
+			Log.i(TAG, "No Data file set.. Forcing preferences...");
+			Intent i = new Intent(getBaseContext(),
+					Preferences.class);
+			startActivity(i);
+			//forcePreferences(app.res.getString(R.string.message_set_data_file));
+		}
 		// set view
 		setContentView(R.layout.accounts);
 		// get list
@@ -98,6 +119,51 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		onWindowFocusChanged(true);
 	}
 
+	/**
+	 * When menu is selected on this app, show options.
+	 * 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	/**
+	 * When any menu item is selected, perform specific action.
+	 * 
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_prefs:
+			// show preferences
+			startActivity(new Intent(getBaseContext(), Preferences.class));
+			return true;
+		case R.id.menu_book:
+			// Start intent to show book details
+			if (getApp().getGncDataHandler() != null)
+				startActivity(new Intent(getBaseContext(),
+						BookDetailsActivity.class));
+			return true;
+		case R.id.menu_save:
+			// Save data
+			// #TODO Save data
+			return true;
+		case R.id.menu_discard:
+			// cancel changes and reload - but ask before doing
+			// #TODO discard changes
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		// onResume is too early (the "Loading..." screen still shows), so update the data when we get focus.
@@ -105,16 +171,34 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			return;
 		// Synchronise this view with the data. If they have changed,
 		// get the new data and tell the adapter to refresh.
-		long cc = app.gncDataHandler.getChangeCount();
-		if ( cc != dataChangeCount ) {
-			Log.i(TAG, "onResume: data changed...");
-			dc = app.gncDataHandler.getGncData();
-			dataChangeCount = cc;
-			getListData(dc.book.rootAccountGUID);
-			lstAdapter.notifyDataSetChanged();
+		if (getApp().getGncDataHandler() != null) {
+			long cc = getApp().getGncDataHandler().getChangeCount();
+			if ( cc != dataChangeCount ) {
+				Log.i(TAG, "onResume: data changed...");
+				dc = getApp().getGncDataHandler().getGncData();
+				dataChangeCount = cc;
+				getListData(dc.book.rootAccountGUID);
+				lstAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 
+
+	/**
+	 * When the view is restarted when returned from preferences screen, check
+	 * if the reload file flag is set and read data again if it does.
+	 * 
+	 * @see android.app.Activity#onRestart()
+	 */
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.i(TAG, "Activity Restarted.. Checking if data file changed...");
+		// check if reload flag is set then read data again
+		if (getApp().isReloadFile() && getApp().canReadData())
+			// read data
+			getApp().readData();
+	}
 
 	/**
 	 * This method will get all the sub accounts of root and adds it to the list
@@ -125,9 +209,9 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	private void getListData(String rootGUID) {
 		// get root account
 		Account account = dc.accounts.get(rootGUID);
-		listData = app.gncDataHandler.getSubAccounts(rootGUID);
-		if ( sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false) )
-			app.gncDataHandler.getAccountBalanceWithChildren(account);
+		listData = getApp().getGncDataHandler().getSubAccounts(rootGUID);
+		if ( sp.getBoolean(getApp().res.getString(R.string.pref_include_subaccount_in_balance), false) )
+			getApp().getGncDataHandler().getAccountBalanceWithChildren(account);
 
 		currRootGUID = rootGUID;
 	}
@@ -230,7 +314,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			item.accGUID = account.GUID;
 			
 			Double balance;
-			if (sp.getBoolean(app.res.getString(R.string.pref_include_subaccount_in_balance), false))
+			if (sp.getBoolean(getApp().res.getString(R.string.pref_include_subaccount_in_balance), false))
 				balance = account.balanceWithChildren;
 			else
 				balance = account.balance;
@@ -245,10 +329,10 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 
 			// set amount colour
 			if (balance < 0)
-				item.txvBalance.setTextColor(app.res
+				item.txvBalance.setTextColor(getApp().res
 						.getColor(R.color.color_negative));
 			else
-				item.txvBalance.setTextColor(app.res
+				item.txvBalance.setTextColor(getApp().res
 						.getColor(R.color.color_positive));
 			// set image properties
 			if (account.GUID.equalsIgnoreCase(currRootGUID))
