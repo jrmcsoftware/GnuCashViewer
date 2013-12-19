@@ -19,6 +19,7 @@
 package io.github.jrmcsoftware.gnucashviewer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -38,116 +39,124 @@ import android.widget.TextView;
  * 
  */
 public class FileChooser extends ListActivity {
-	private final String TAG = "File Chooser";
-	protected ArrayList<String> mFileList;
-	protected File mRoot;
-	private GnuCashViewer app;
+    private final String TAG = "File Chooser";
+    protected ArrayList<String> mFileList;
+    protected File mRoot;
+    private GnuCashViewer app;
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		app = (GnuCashViewer) getApplication();
-		Log.i(TAG, "Filechooser started");
-		// make this a dialogue
-		requestWindowFeature(Window.FEATURE_LEFT_ICON);
-		setContentView(R.layout.filechooser);
-		getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
-				android.R.drawable.stat_notify_sdcard);
-		// TODO It would be nice to start from the directory of the previously
-		// selected data file (if not null)
-		initialize(app.res.getString(R.string.def_folder));
-	}
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        app = (GnuCashViewer) getApplication();
+        Log.i(TAG, "Filechooser started");
+        // make this a dialogue
+        requestWindowFeature(Window.FEATURE_LEFT_ICON);
+        setContentView(R.layout.filechooser);
+        getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.stat_notify_sdcard);
+        // TODO It would be nice to start from the directory of the previously
+        // selected data file (if not null)
+        initialize();
+    }
 
-	private void initialize(String path) {
-		mFileList = new ArrayList<String>();
-		// mFileList.add("..");
-		if (getDirectory(path)) {
-			getFiles(mRoot);
-			Collections.sort(mFileList, String.CASE_INSENSITIVE_ORDER);
-			displayFiles();
-		}
-	}
+    private void initialize() {
+        String storageRoot;
+        try {
+            storageRoot = Environment.getExternalStorageDirectory().getCanonicalPath();
+        } catch (final IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
 
-	private void refreshRoot(File f) {
-		mRoot = f;
-		mFileList.clear();
-		if (!f.getName().equalsIgnoreCase("sdcard"))
-			mFileList.add("..");
-		getFiles(mRoot);
-		Collections.sort(mFileList, String.CASE_INSENSITIVE_ORDER);
-		((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
-	}
+        mFileList = new ArrayList<String>();
+        // mFileList.add("..");
+        if (getDirectory(storageRoot)) {
+            getFiles(mRoot);
+            Collections.sort(mFileList, String.CASE_INSENSITIVE_ORDER);
+            displayFiles();
+        }
+    }
 
-	private boolean getDirectory(String path) {
-		TextView tv = (TextView) findViewById(R.id.filelister_message);
-		// check to see if there's an SD card.
-		String cardstatus = Environment.getExternalStorageState();
-		if (cardstatus.equals(Environment.MEDIA_REMOVED)
-				|| cardstatus.equals(Environment.MEDIA_UNMOUNTABLE)
-				|| cardstatus.equals(Environment.MEDIA_UNMOUNTED)
-				|| cardstatus.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
-			tv.setText(getString(R.string.sdcard_error));
-			return false;
-		}
-		// now get file object for the path
-		mRoot = new File(path);
-		if (!mRoot.exists())
-			tv.setText(getString(R.string.directory_error, path));
-		else
-			return true;
-		return false;
-	}
+    private void refreshRoot(final File f) {
+        mRoot = f;
+        mFileList.clear();
+        if (!f.getName().equalsIgnoreCase("sdcard")) {
+            mFileList.add("..");
+        }
+        getFiles(mRoot);
+        Collections.sort(mFileList, String.CASE_INSENSITIVE_ORDER);
+        ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
+    }
 
-	private void getFiles(File f) {
-		if (f.isDirectory()) {
-			File[] childs = f.listFiles();
-			// listFile can return null if an error occurs!
-			if (null == childs)
-				return;
-			for (File child : childs) {
-				getFile(child);
-			}
-		} else
-			getFile(f);
-	}
+    private boolean getDirectory(final String path) {
+        final TextView tv = (TextView) findViewById(R.id.filelister_message);
+        // check to see if there's an SD card.
+        final String cardstatus = Environment.getExternalStorageState();
+        if (cardstatus.equals(Environment.MEDIA_REMOVED) || cardstatus.equals(Environment.MEDIA_UNMOUNTABLE)
+                || cardstatus.equals(Environment.MEDIA_UNMOUNTED)
+                || cardstatus.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+            tv.setText(getString(R.string.sdcard_error));
+            return false;
+        }
+        // now get file object for the path
+        mRoot = new File(path);
+        if (!mRoot.exists()) {
+            tv.setText(getString(R.string.directory_error, path));
+        } else {
+            return true;
+        }
+        return false;
+    }
 
-	private void getFile(File f) {
-		String filename = f.getName();
-		mFileList.add(filename);
-	}
+    private void getFiles(final File f) {
+        if (f.isDirectory()) {
+            final File[] childs = f.listFiles();
+            // listFile can return null if an error occurs!
+            if (null == childs) {
+                return;
+            }
+            for (final File child : childs) {
+                getFile(child);
+            }
+        } else {
+            getFile(f);
+        }
+    }
 
-	/**
-	 * Opens the directory, puts valid files in array adapter for display
-	 */
-	private void displayFiles() {
-		ArrayAdapter<String> fileAdapter;
-		fileAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, mFileList);
-		setListAdapter(fileAdapter);
-	}
+    private void getFile(final File f) {
+        final String filename = f.getName();
+        mFileList.add(filename);
+    }
 
-	/**
-	 * Stores the path of clicked file in the intent and exits.
-	 */
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		File f;
-		if (mFileList.get(position) == "..")
-			f = new File(mRoot.getParent());
-		else
-			f = new File(mRoot + "/" + mFileList.get(position));
-		if (f.isDirectory()) {
-			refreshRoot(f);
-			return;
-		}
-		Log.i(TAG, "File selected, returning result");
-		// send result
-		Intent i = new Intent();
-		i.putExtra(app.res.getString(R.string.pref_data_file_key), f
-				.getAbsolutePath());
-		setResult(RESULT_OK, i);
-		// close activity
-		finish();
-	}
+    /**
+     * Opens the directory, puts valid files in array adapter for display
+     */
+    private void displayFiles() {
+        ArrayAdapter<String> fileAdapter;
+        fileAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mFileList);
+        setListAdapter(fileAdapter);
+    }
+
+    /**
+     * Stores the path of clicked file in the intent and exits.
+     */
+    @Override
+    protected void onListItemClick(final ListView l, final View v, final int position, final long id) {
+        File f;
+        if (mFileList.get(position) == "..") {
+            f = new File(mRoot.getParent());
+        } else {
+            f = new File(mRoot + "/" + mFileList.get(position));
+        }
+        if (f.isDirectory()) {
+            refreshRoot(f);
+            return;
+        }
+        Log.i(TAG, "File selected, returning result");
+        // send result
+        final Intent i = new Intent();
+        i.putExtra(app.res.getString(R.string.pref_data_file_key), f.getAbsolutePath());
+        setResult(RESULT_OK, i);
+        // close activity
+        finish();
+    }
 }
