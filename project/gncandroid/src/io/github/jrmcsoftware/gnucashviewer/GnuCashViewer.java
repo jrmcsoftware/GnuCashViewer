@@ -18,6 +18,8 @@
  */
 package io.github.jrmcsoftware.gnucashviewer;
 
+import java.io.File;
+
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -49,7 +51,9 @@ public class GnuCashViewer extends Application implements
 	 * available to read data file.
 	 */
 	public boolean canReadData() {
-		return sp.getString(res.getString(R.string.pref_data_file_key), null) != null;
+	    String filePath = sp.getString(res.getString(R.string.pref_data_file_key), null);
+	    File file = new File(filePath);
+	    return file.exists();
 	}
 
 	/**
