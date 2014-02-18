@@ -372,7 +372,9 @@ public class GNCDataHandler {
 		
 		query = "select transactions.guid as _id, transactions.post_date, transactions.description, " + amountCalculation + " as amount " +
 				"from accounts, transactions, splits " +
-				"where splits.tx_guid = transactions.guid and splits.account_guid=accounts.guid and accounts.guid=? " +
+				"where splits.tx_guid = transactions.guid "
+				+ "and splits.account_guid=accounts.guid "
+				+ "and accounts.guid = ? " +
 				"order by transactions.post_date desc";
 		
 		return sqliteHandle.rawQuery(query, queryArgs);
@@ -577,7 +579,12 @@ public class GNCDataHandler {
 	}
 
 	public String[] getAccountsFromTransactionDescription(String description) {
-		String transSQL = "select accounts.guid from accounts, splits where tx_guid = (select guid from transactions where description=? order by post_date desc limit 1) and account_guid = accounts.guid;";
+		String transSQL = "select accounts.guid from accounts, splits "
+		                + "where tx_guid = (select guid "
+		                                   + "from transactions "
+		                                   + "where description=? "
+		                                   + "order by post_date desc limit 1) "
+                        + "and account_guid = accounts.guid;";
 		String[] transSQLArgs = { description };
 		Cursor cursor = sqliteHandle.rawQuery(transSQL, transSQLArgs);
 		try {
