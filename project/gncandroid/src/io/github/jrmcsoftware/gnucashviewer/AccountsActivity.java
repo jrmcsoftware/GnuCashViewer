@@ -47,6 +47,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.*;
 
 /**
  * @author shyam.avvari
@@ -60,6 +61,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 	// The GUID which roots the tree of accounts.
 	// ** NOTE: This GUID is the root of the accounts in this view, _not_ the gnucash "Root" account. **
 	private String currRootGUID;
+	private String parentGUID;
 	// Map of accounts which will form the list view.
 	private Map<String, Account> listData = new TreeMap<String, Account>();
 	// The parsed book.
@@ -214,6 +216,7 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 			getApp().getGncDataHandler().getAccountBalanceWithChildren(account);
 
 		currRootGUID = rootGUID;
+		parentGUID = account.parentGUID;
 	}
 
 	/**
@@ -231,15 +234,27 @@ public class AccountsActivity extends Activity implements OnItemClickListener {
 		// get current item
 		Account account = (Account) b.getItem(position);
 		// depending on root or item get list
-		if (account.GUID.equalsIgnoreCase(currRootGUID))
+		if (account.GUID.equalsIgnoreCase(currRootGUID)) {
 			getListData(account.parentGUID);
-		else
+		} else {
 			getListData(account.GUID);
+		}
+		
 		// set refresh
 		b.notifyDataSetChanged();
 		// reset list position to top
 		parent.scrollTo(0, 0);
 		Log.i(TAG, "Accounts Refreshed");
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if (parentGUID == null) {
+			super.onBackPressed();
+		} else {
+	    	getListData(parentGUID);
+			lstAdapter.notifyDataSetChanged();
+		}
 	}
 
 	/**
