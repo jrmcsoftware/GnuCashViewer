@@ -51,7 +51,7 @@ public class GnuCashViewer extends Application implements
 	 * available to read data file.
 	 */
 	public boolean canReadData() {
-	    String filePath = sp.getString(res.getString(R.string.pref_data_file_key), null);
+	    String filePath = sp.getString(res.getString(R.string.pref_data_file_key), "");
 	    File file = new File(filePath);
 	    return file.exists();
 	}
