@@ -115,7 +115,6 @@ public class AccountsActivity extends ActionBarActivity implements OnItemClickLi
 	@Override
 	protected void onResume() {
 		super.onResume();
-		onWindowFocusChanged(true);
 	}
 
 	/**
@@ -149,39 +148,10 @@ public class AccountsActivity extends ActionBarActivity implements OnItemClickLi
 				startActivity(new Intent(getBaseContext(),
 						BookDetailsActivity.class));
 			return true;
-		case R.id.menu_save:
-			// Save data
-			// #TODO Save data
-			return true;
-		case R.id.menu_discard:
-			// cancel changes and reload - but ask before doing
-			// #TODO discard changes
-			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
-	
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		// onResume is too early (the "Loading..." screen still shows), so update the data when we get focus.
-		if (!hasFocus)
-			return;
-		// Synchronise this view with the data. If they have changed,
-		// get the new data and tell the adapter to refresh.
-		if (getApp().getGncDataHandler() != null) {
-			long cc = getApp().getGncDataHandler().getChangeCount();
-			if ( cc != dataChangeCount ) {
-				Log.i(TAG, "onResume: data changed...");
-				dc = getApp().getGncDataHandler().getGncData();
-				dataChangeCount = cc;
-				getListData(dc.book.rootAccountGUID);
-				lstAdapter.notifyDataSetChanged();
-			}
-		}
-	}
-
 
 	/**
 	 * When the view is restarted when returned from preferences screen, check
