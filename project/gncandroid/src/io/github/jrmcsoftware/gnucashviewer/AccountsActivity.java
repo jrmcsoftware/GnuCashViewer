@@ -26,13 +26,11 @@ import java.text.NumberFormat;
 import java.util.Map;
 import java.util.TreeMap;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,13 +45,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.*;
 
 /**
  * @author shyam.avvari
  * 
  */
-public class AccountsActivity extends Activity implements OnItemClickListener {
+public class AccountsActivity extends ActionBarActivity implements OnItemClickListener {
 	// TAG for this activity
 	private static final String TAG = "AccountsActivity";
 	// Application data
